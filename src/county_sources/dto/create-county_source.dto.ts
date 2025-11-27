@@ -1,24 +1,28 @@
-import { IsInt, IsOptional, IsString, IsDate } from 'class-validator';
+import { IsInt, IsOptional, IsString, IsDate, IsIn, IsNumber } from 'class-validator';
 
 export class CreateCountriesInfoDto {
  
-  @IsString()
-  country_name: string;
+	  @IsNumber()
+  country_id: number;
+	
+	@IsString()
+	country_name: string;
 
-  @IsOptional()
-  @IsString()
-  country_arabic_name?: string;
 
-  @IsOptional()
-  @IsString()
-  slug?: string;
+	@IsString()
+	country_arabic_name?: string;
 
-  @IsOptional()
-  @IsString()
-  type?: string;
+	@IsOptional()
+	@IsString()
+	slug?: string;
 
-  @IsOptional()
-  @IsString()
-  operator?: string;
+
+	@IsString()
+	@IsIn(['AUTO', 'MANUAL'], { message: 'Type must be either AUTO or MANUAL' })
+	type?: string;
+
+
+	@IsString()
+	operator?: string;
 
 }
