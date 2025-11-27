@@ -28,10 +28,19 @@ export class UploadSchedulerController {
 	}
 	
 	 @Get(':id')
-  async getUploadSchedulerByID(
-    @Param('id', ParseIntPipe) id: number,
-  ) {
-    return await this.uploadSchedulerService.getUploadSchedulerByID(id);
-  }
+	async getUploadSchedulerByID(
+		@Param('id', ParseIntPipe) id: number,
+	) {
+		return await this.uploadSchedulerService.getUploadSchedulerByID(id);
+	}
+@Get('country/:countryID')
+async getUploadSchedulerByCountryID(
+  @Param('countryID', ParseIntPipe) countryID: number,
+) {
+  return await this.uploadSchedulerService.getUploadSchedulerByCountryID(countryID);
+}
+
+	
+	
 
 }

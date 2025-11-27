@@ -265,6 +265,70 @@ async updateUploadScheduler(id: number, updateDto: UpdateUploadSchedulerDto) {
       };
     }
   }
+async getUploadSchedulerByCountryID(countryID: number) {
+  try {
+    // Fetch all schedulers with country info for this country
+    const schedulers = await this.uploadSchedulerRepo.find({
+      relations: ['country'],
+      where: { country_id: countryID },
+    });
+
+    if (schedulers.length === 0) {
+      return {
+        status: 'FAILURE',
+        statusCode: HttpStatus.NOT_FOUND,
+        message: `No upload schedulers found for country ID ${countryID}`,
+        data: [],
+      };
+    }
+
+    // Pivot key-value pairs per platform
+    const result = schedulers.reduce((acc, item) => {
+      const countryId = item.country_id;
+
+      if (!acc[countryId]) {
+        acc[countryId] = {
+          COUNTRY_ID: countryId,
+          COUNTRY_NAME: item.country?.country_name || '',
+        };
+      }
+
+      if (!acc[countryId][item.platform]) {
+        acc[countryId][item.platform] = {};
+      }
+
+      // Assign key-value pairs under platform
+      acc[countryId][item.platform][item.key] = item.value;
+
+      // Optional: include other fields like UPLOAD_FREQUENCY
+      // if (item.UPLOAD_FREQUENCY) {
+      //   acc[countryId][item.platform]['UPLOAD_FREQUENCY'] = item.UPLOAD_FREQUENCY;
+      // }
+
+      return acc;
+    }, {} as Record<number, any>);
+
+    // Convert object to array
+    const data = Object.values(result);
+
+    return {
+      status: 'SUCCESS',
+      statusCode: HttpStatus.OK,
+      message: `Upload schedulers for country ID ${countryID} pivoted successfully by platform and key`,
+      data,
+    };
+  } catch (err) {
+    console.error('Error fetching upload schedulers:', err);
+    return {
+      status: 'FAILURE',
+      statusCode: HttpStatus.EXPECTATION_FAILED,
+      message: 'Error fetching upload schedulers',
+      data: err.message,
+    };
+  }
+}
+
+
 
 
 
