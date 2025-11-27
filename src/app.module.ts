@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { CountySourcesModule } from './county_sources/county_sources.module';
+import { UploadSchedulerModule } from './upload-scheduler/upload-scheduler.module';
 
 
 @Module({
@@ -24,6 +25,8 @@ imports: [
   }),
 
   CountySourcesModule,
+
+  UploadSchedulerModule,
 ]
 
 ,
