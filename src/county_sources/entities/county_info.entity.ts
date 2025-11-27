@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { CountrySources } from './country_source.entity';
+import { UploadScheduler } from 'src/upload-scheduler/entities/upload-scheduler.entity';
 
 @Entity('countries_info')
 export class CountriesInfo {
@@ -35,4 +36,7 @@ export class CountriesInfo {
 	
 	 @OneToMany(() => CountrySources, (source) => source.country)
   sources: CountrySources[];
+  
+  @OneToMany(() => UploadScheduler, (scheduler) => scheduler.country)
+uploadSchedulers: UploadScheduler[];
 }
