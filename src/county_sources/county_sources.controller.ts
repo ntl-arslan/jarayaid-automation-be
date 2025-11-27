@@ -43,10 +43,19 @@ export class CountySourcesController {
 	
 	 @Get('active/:type')
   async getActiveCountryByType(
-    @Param('type') type: CountryType,
+	@Param('type') type: CountryType,
   ) {
-    return await this.countySourcesService.getAllCountySourcesByType(type);
+	return await this.countySourcesService.getAllCountySourcesByType(type);
   }
+  
+  
+@Get('sources/:countryID')
+async getSourcesByCountryID(
+  @Param('countryID') countryID: number, 
+) {
+  return await this.countySourcesService.getSourcesByCountryID(countryID);
+}
+
 	
 	
 	
