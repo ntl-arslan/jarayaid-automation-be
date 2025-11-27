@@ -110,39 +110,39 @@ async createCountrySources(createCountrySourceDto: CreateCountriesInfoDto) {
 
 
 
-	async getAllCountySources() 	
-	{
-		try
-		{
-			const getAllCountySources=await this.countriesInfoRepo.find();
-			if(getAllCountySources.length >0)
-				{
-					return {
-						status: "SUCCESS",
-						statusCode: HttpStatus.OK,
-						message: 'Country Sources Fetched Successfully',
-						data: getAllCountySources
-					}
-						
-				}else
-					{
-						return {
-						status: "FAILURE",
-						statusCode: HttpStatus.NOT_FOUND,
-						message: 'No Country Sources found',
-						data:[]
-						}
-					}
-		}catch(err)
-		{
-			return {
-						status: "FAILURE",
-						statusCode: HttpStatus.EXPECTATION_FAILED,
-						message: 'Error Fetching Country Sources',
-						data:[]
-						}
-		}
-	}
+	async getAllCountySources() {
+  try {
+    // Fetch all countries with their sources
+    const getAllCountySources = await this.countriesInfoRepo.find({
+      relations: ['sources'], // include source info
+    });
+
+    if (getAllCountySources.length > 0) {
+      return {
+        status: "SUCCESS",
+        statusCode: HttpStatus.OK,
+        message: 'Country Sources Fetched Successfully',
+        data: getAllCountySources,
+      };
+    } else {
+      return {
+        status: "FAILURE",
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'No Country Sources found',
+        data: [],
+      };
+    }
+  } catch (err) {
+    console.error('Error fetching country sources:', err);
+    return {
+      status: "FAILURE",
+      statusCode: HttpStatus.EXPECTATION_FAILED,
+      message: 'Error Fetching Country Sources',
+      data: [],
+    };
+  }
+}
+
 	 async updateCountrySources(id: number, updateCountriesInfoDto: UpdateCountriesInfoDto) {
 		try {
 			const country = await this.countriesInfoRepo.findOne({ where: { id: id } as unknown });
@@ -214,86 +214,97 @@ async createCountrySources(createCountrySourceDto: CreateCountriesInfoDto) {
 			};
 		}
 	}
-	async getAllActiveCountySources() 
-	{
-		try
-		{
-			const getAllCountySources=await this.countriesInfoRepo.find({where:
-				{
-					status:"ACTIVE"
-				}});
-			if(getAllCountySources)
-				{
-					return {
-						status: "SUCCESS",
-						statusCode: HttpStatus.OK,
-						message: 'ActiveCountry Sources Fetched Successfully',
-						data: getAllCountySources
-					}
-						
-				}else
-					{
-						return {
-						status: "FAILURE",
-						statusCode: HttpStatus.NOT_FOUND,
-						message: 'No Active Country Sources found',
-						data:[]
-						}
-					}
-		}catch(err)
-		{
-			return {
-						status: "FAILURE",
-						statusCode: HttpStatus.EXPECTATION_FAILED,
-						message: 'Error Fetching Active Country Sources',
-						data:[]
-						}
-		}
-	}
-	async getAllCountySourcesByType(type: string) 
-	{
-		try
-		{
-		if (type !== CountryType.AUTO && type !== CountryType.MANUAL) {
-  return {
-    status: 'FAILURE',
-    statusCode: HttpStatus.BAD_REQUEST,
-    message: 'Invalid Country Type Provided',
-    data: [],
-  };
+	async getAllActiveCountySources() {
+  try {
+   
+    const getAllCountySources = await this.countriesInfoRepo.find({
+      where: { status: 'ACTIVE' },
+      relations: ['sources'],
+    });
+
+    
+    const filteredCountries = getAllCountySources.map(country => ({
+      ...country,
+      sources: country.sources?.filter(source => source.status === 'ACTIVE') || [],
+    }));
+
+    if (filteredCountries.length > 0) {
+      return {
+        status: "SUCCESS",
+        statusCode: HttpStatus.OK,
+        message: 'Active Country Sources Fetched Successfully',
+        data: filteredCountries,
+      };
+    } else {
+      return {
+        status: "FAILURE",
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'No Active Country Sources found',
+        data: [],
+      };
+    }
+  } catch (err) {
+    console.error('Error fetching active country sources:', err);
+    return {
+      status: "FAILURE",
+      statusCode: HttpStatus.EXPECTATION_FAILED,
+      message: 'Error Fetching Active Country Sources',
+      data: [],
+    };
+  }
 }
-			const getAllCountySources=await this.countriesInfoRepo.find({where:
-				{
-					status:"ACTIVE",
-					type:type
-				}});
-			
-			if(getAllCountySources.length >0)
-				{
-					return {
-						status: "SUCCESS",
-						statusCode: HttpStatus.OK,
-						message: `Active ${type} Country Sources Fetched Successfully`,
-						data: getAllCountySources
-					}
-						
-				}else
-					{
-						return {
-						status: "FAILURE",
-						statusCode: HttpStatus.NOT_FOUND,
-						message: `No ${type} Active Country Sources found`,
-						data:[]
-						}
-					}
-		}catch(err)
-		{
-			return {
-						status: "FAILURE",
-						statusCode: HttpStatus.EXPECTATION_FAILED,
-						message: 'Error Fetching Active Country Sources',
-						data:[]
-						}
-		}
-	}
+
+	async getAllCountySourcesByType(type: string) {
+  try {
+   
+    if (type !== CountryType.AUTO && type !== CountryType.MANUAL) {
+      return {
+        status: 'FAILURE',
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: 'Invalid Country Type Provided',
+        data: [],
+      };
+    }
+
+    
+    const getAllCountySources = await this.countriesInfoRepo.find({
+      where: {
+        status: 'ACTIVE',
+        type: type,
+      },
+      relations: ['sources'], 
+    });
+
+ 
+    const filteredCountries = getAllCountySources.map(country => ({
+      ...country,
+      sources: country.sources?.filter(source => source.status === 'ACTIVE') || [],
+    }));
+
+    if (filteredCountries.length > 0) {
+      return {
+        status: 'SUCCESS',
+        statusCode: HttpStatus.OK,
+        message: `Active ${type} Country Sources Fetched Successfully`,
+        data: filteredCountries,
+      };
+    } else {
+      return {
+        status: 'FAILURE',
+        statusCode: HttpStatus.NOT_FOUND,
+        message: `No ${type} Active Country Sources found`,
+        data: [],
+      };
+    }
+  } catch (err) {
+    console.error('Error fetching active country sources by type:', err);
+    return {
+      status: 'FAILURE',
+      statusCode: HttpStatus.EXPECTATION_FAILED,
+      message: 'Error Fetching Active Country Sources',
+      data: [],
+    };
+  }
+}
+
 }
