@@ -41,12 +41,12 @@ export class CountySourcesController {
 	}
 	
 	
-	@Get('active')
-	async getActiveCountryByType(
-			@Param('type') type: string,
-	) {
-		return await this.countySourcesService.getActiveCountryByType();
-	}
+	// @Get('active')
+	// async getActiveCountryByType(
+	// 		@Param('type') type: string,
+	// ) {
+	// 	return await this.countySourcesService.getActiveCountryByType();
+	// }
 	
 	
 	
