@@ -1,4 +1,23 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateUploadSchedulerDto } from './create-upload-scheduler.dto';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 
-export class UpdateUploadSchedulerDto extends PartialType(CreateUploadSchedulerDto) {}
+export class UpdateUploadSchedulerDto {
+ 
+  @IsString()
+   @IsOptional()
+  key: string;
+
+  @IsOptional()
+  @IsString()
+  value?: string;
+  
+   @IsOptional()
+  @IsString()
+  platform?: string;
+
+  @IsString()
+  operator?: string;
+  
+   @IsOptional()
+  @IsString()
+  status?: string; 
+}

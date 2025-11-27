@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, ParseIntPipe } from '@nestjs/common';
 import { UploadSchedulerService } from './upload-scheduler.service';
 import { CreateUploadSchedulerDto } from './dto/create-upload-scheduler.dto';
 import { UpdateUploadSchedulerDto } from './dto/update-upload-scheduler.dto';
@@ -15,5 +15,23 @@ export class UploadSchedulerController {
 	getAllUploadSchedulers() {
 		return this.uploadSchedulerService.getAllUploadSchedulers();
 	}
+	@Get('active')
+	getAllActiveUploadSchedulers() {
+		return this.uploadSchedulerService.getAllActiveUploadSchedulers();
+	}
+	 @Put(':id')
+	async update(
+		@Param('id') id: number,
+		@Body() updateUploadSchedulerDto: UpdateUploadSchedulerDto,
+	) {
+		return await this.uploadSchedulerService.updateUploadScheduler(id, updateUploadSchedulerDto);
+	}
+	
+	 @Get(':id')
+  async getUploadSchedulerByID(
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return await this.uploadSchedulerService.getUploadSchedulerByID(id);
+  }
 
 }
