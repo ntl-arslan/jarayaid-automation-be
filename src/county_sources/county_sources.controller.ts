@@ -1,8 +1,9 @@
-import { Controller,Post, Body, Get, Put, ParseIntPipe, Param, Delete } from '@nestjs/common';
+import { Controller,Post, Body, Get, Put, ParseIntPipe, Param, Delete, ParseEnumPipe } from '@nestjs/common';
 import { CountySourcesService } from './county_sources.service';
 import { CreateCountriesInfoDto } from './dto/create-county_source.dto';
 import { UpdateCountriesInfoDto } from './dto/update-county_source.dto';
 import { DeleteCountryInfoDto } from './dto/delete-country_source.dt';
+import { CountryType } from 'src/constants/constants';
 
 @Controller('country-sources')
 export class CountySourcesController {
@@ -40,13 +41,12 @@ export class CountySourcesController {
 		return await this.countySourcesService.getAllActiveCountySources();
 	}
 	
-	
-	// @Get('active')
-	// async getActiveCountryByType(
-	// 		@Param('type') type: string,
-	// ) {
-	// 	return await this.countySourcesService.getActiveCountryByType();
-	// }
+	 @Get('active/:type')
+  async getActiveCountryByType(
+    @Param('type') type: CountryType,
+  ) {
+    return await this.countySourcesService.getAllCountySourcesByType(type);
+  }
 	
 	
 	
