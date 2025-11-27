@@ -35,6 +35,20 @@ export class CountySourcesController {
 		return await this.countySourcesService.deleteCountrySources(id,deleteCountryInfoDto);
 	}
 	
+	@Get('active')
+	async getAllActiveCountySources() {
+		return await this.countySourcesService.getAllActiveCountySources();
+	}
+	
+	
+	@Get('active')
+	async getActiveCountryByType(
+			@Param('type') type: string,
+	) {
+		return await this.countySourcesService.getActiveCountryByType();
+	}
+	
+	
 	
 	
 

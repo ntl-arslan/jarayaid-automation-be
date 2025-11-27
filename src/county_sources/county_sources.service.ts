@@ -146,4 +146,40 @@ export class CountySourcesService {
       };
     }
   }
+	async getAllActiveCountySources() 
+	{
+		try
+		{
+			const getAllCountySources=await this.countriesInfoRepo.find({where:
+				{
+					status:"ACTIVE"
+				}});
+			if(getAllCountySources)
+				{
+					return {
+						status: "SUCCESS",
+						statusCode: HttpStatus.OK,
+						message: 'ActiveCountry Sources Fetched Successfully',
+						data: getAllCountySources
+					}
+						
+				}else
+					{
+						return {
+						status: "FAILURE",
+						statusCode: HttpStatus.NOT_FOUND,
+						message: 'No Active Country Sources found',
+						data:[]
+						}
+					}
+		}catch(err)
+		{
+			return {
+						status: "FAILURE",
+						statusCode: HttpStatus.EXPECTATION_FAILED,
+						message: 'Error Fetching Active Country Sources',
+						data:[]
+						}
+		}
+	}
 }
