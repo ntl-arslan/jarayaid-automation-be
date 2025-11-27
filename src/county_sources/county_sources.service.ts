@@ -3,46 +3,113 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { CreateCountriesInfoDto } from './dto/create-county_source.dto';
-import { CountriesInfo } from './entities/county_source.entity';
+import { CountriesInfo } from './entities/county_info.entity';
 import { UpdateCountriesInfoDto } from './dto/update-county_source.dto';
 import { DeleteCountryInfoDto } from './dto/delete-country_source.dt';
 import { CountryType } from 'src/constants/constants';
+import { CountrySources } from './entities/country_source.entity';
 
 @Injectable()
 export class CountySourcesService {
 	constructor(
 		@InjectRepository(CountriesInfo)
 		private readonly countriesInfoRepo: Repository<CountriesInfo>,
+		@InjectRepository(CountrySources)
+		private readonly countrySourcesRepo: Repository<CountrySources>,
 	) {}
 
-	async createCountrySources(createCountrySourceDto: CreateCountriesInfoDto) {
-		try {
-		 const saveObj=
-		 {
-		 	...createCountrySourceDto,
-			date_time: new Date(),
-			modified_date: new Date(),
-			status:"ACTIVE"
-		 }
-			const savedCountry = await this.countriesInfoRepo.save(saveObj);
+async createCountrySources(createCountrySourceDto: CreateCountriesInfoDto) {
+  try {
+    
+    const existingCountry = await this.countriesInfoRepo.findOne({
+      where: { country_id: createCountrySourceDto.country_id },
+      relations: ['sources'],
+    });
 
-			return {
-				status: "SUCCESS",
-				statusCode: HttpStatus.CREATED,
-				message: 'Country Created Successfully',
-				data: savedCountry,
-			};
-		} catch (err) {
-			console.error('Error creating country:', err);
+    if (existingCountry) {
+      return {
+        status: 'FAILURE',
+        statusCode: HttpStatus.CONFLICT,
+        message: 'Country already exists',
+        data: existingCountry,
+      };
+    }
 
-			return {
-				status: "FAILURE",
-				statusCode: HttpStatus.EXPECTATION_FAILED,
-				message: 'Failed To Create Country',
-				data: err.message,
-			};
-		}
-	}
+    // 2️⃣ Create country entity
+    const country = this.countriesInfoRepo.create({
+      country_id: createCountrySourceDto.country_id,
+      country_name: createCountrySourceDto.country_name,
+      country_arabic_name: createCountrySourceDto.country_arabic_name,
+      slug: createCountrySourceDto.slug,
+      type: createCountrySourceDto.type,
+      operator: createCountrySourceDto.operator,
+      status: createCountrySourceDto.status || 'ACTIVE',
+      datetime: new Date(),
+      modified_datetime: new Date(),
+    });
+
+    const savedCountry = await this.countriesInfoRepo.save(country);
+
+    // 3️⃣ Save sources if provided
+    if (createCountrySourceDto.sources && createCountrySourceDto.sources.length) {
+      for (const s of createCountrySourceDto.sources) {
+        // Check if this source already exists for this country
+        const existingSource = await this.countrySourcesRepo.findOne({
+          where: {
+            country_info_id: savedCountry.id,
+            news_source: s.news_source, // unique at country level
+          },
+        });
+
+        if (existingSource) {
+          continue; // skip duplicate source
+        }
+
+        const sourceEntity = this.countrySourcesRepo.create({
+          country_info_id: savedCountry.id,
+          source: s.source_name,
+          news_source: s.news_source,
+          type: s.source_type,
+          operator: createCountrySourceDto.operator,
+          status: 'ACTIVE',
+          joining_words: s.joining_words,
+          intro_music_path: s.intro_music_path,
+          datetime: new Date(),
+          modified_datetime: new Date(),
+        });
+
+        await this.countrySourcesRepo.save(sourceEntity);
+      }
+    }
+
+    // 4️⃣ Fetch country with sources to return
+    const countryWithSources = await this.countriesInfoRepo.findOne({
+      where: { id: savedCountry.id },
+      relations: ['sources'],
+    });
+
+    return {
+      status: 'SUCCESS',
+      statusCode: HttpStatus.CREATED,
+      message: 'Country and sources created successfully',
+      data: countryWithSources,
+    };
+  } catch (err) {
+    console.error('Error creating country with sources:', err);
+
+    return {
+      status: 'FAILURE',
+      statusCode: HttpStatus.EXPECTATION_FAILED,
+      message: 'Failed to create country and sources',
+      data: err.message,
+    };
+  }
+}
+
+
+
+
+
 	async getAllCountySources() 	
 	{
 		try
