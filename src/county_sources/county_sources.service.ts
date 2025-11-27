@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateCountriesInfoDto } from './dto/create-county_source.dto';
 import { CountriesInfo } from './entities/county_source.entity';
 import { UpdateCountriesInfoDto } from './dto/update-county_source.dto';
+import { DeleteCountryInfoDto } from './dto/delete-country_source.dt';
 
 @Injectable()
 export class CountySourcesService {
@@ -27,7 +28,7 @@ export class CountySourcesService {
 			return {
 				status: "SUCCESS",
 				statusCode: HttpStatus.CREATED,
-				message: 'Country created successfully',
+				message: 'Country Created Successfully',
 				data: savedCountry,
 			};
 		} catch (err) {
@@ -36,8 +37,8 @@ export class CountySourcesService {
 			return {
 				status: "FAILURE",
 				statusCode: HttpStatus.EXPECTATION_FAILED,
-				message: 'Failed to create country',
-				data: err.message, // include the error message
+				message: 'Failed To Create Country',
+				data: err.message,
 			};
 		}
 	}
@@ -51,7 +52,7 @@ export class CountySourcesService {
 					return {
 						status: "SUCCESS",
 						statusCode: HttpStatus.OK,
-						message: 'Country Sources fetched successfully',
+						message: 'Country Sources Fetched Successfully',
 						data: getAllCountySources
 					}
 						
@@ -66,10 +67,50 @@ export class CountySourcesService {
 					}
 		}catch(err)
 		{
-			
+			return {
+						status: "FAILURE",
+						statusCode: HttpStatus.EXPECTATION_FAILED,
+						message: 'Error Fetching Country Sources',
+						data:[]
+						}
 		}
 	}
 	 async updateCountrySources(id: number, updateCountriesInfoDto: UpdateCountriesInfoDto) {
+		try {
+			const country = await this.countriesInfoRepo.findOne({ where: { id: id } as unknown });
+
+			if (!country) {
+				 return {
+				status: 'FAILURE',
+				statusCode: HttpStatus.NOT_FOUND,
+				message: 'No Such Country Found',
+				data: [],
+			};
+			}
+				const updateObj=
+				{
+					...updateCountriesInfoDto,
+					modified_datetime: new Date(),
+				}
+			 await this.countriesInfoRepo.update(id, updateObj);
+
+			return {
+				status: 'SUCCESS',
+				statusCode: HttpStatus.OK,
+				message: 'Country Updated Successfully',
+				data: updateCountriesInfoDto,
+			};
+		} catch (err) {
+			console.error('Error updating country:', err);
+			return {
+				status: 'FAILURE',
+				statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+				message: 'Failed To Update Country',
+				data: err.message,
+			};
+		}
+	}
+	 async deleteCountrySources(id: number,deleteCountryInfoDto: DeleteCountryInfoDto) {
     try {
       const country = await this.countriesInfoRepo.findOne({ where: { id: id } as unknown });
 
@@ -83,23 +124,24 @@ export class CountySourcesService {
       }
 				const updateObj=
 				{
-					...updateCountriesInfoDto,
 					modified_datetime: new Date(),
+					status: 'INACTIVE',
+					operator:deleteCountryInfoDto.operator
 				}
        await this.countriesInfoRepo.update(id, updateObj);
 
       return {
         status: 'SUCCESS',
         statusCode: HttpStatus.OK,
-        message: 'Country updated successfully',
-        data: updateCountriesInfoDto,
+        message: 'Country Deleted Successfully',
+        data: [],
       };
     } catch (err) {
       console.error('Error updating country:', err);
       return {
         status: 'FAILURE',
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Failed to update country',
+        message: 'Failed To Update Country',
         data: err.message,
       };
     }
