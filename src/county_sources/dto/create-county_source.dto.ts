@@ -25,4 +25,8 @@ export class CreateCountriesInfoDto {
 	@IsString()
 	operator?: string;
 
+		@IsString()
+			@IsIn(['ACTIVE', 'INACTIVE'], { message: 'Status must be either ACTIVE or INACTIVE' })
+	status?: string;
+
 }
