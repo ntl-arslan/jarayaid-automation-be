@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
+import { CountySourcesModule } from './county_sources/county_sources.module';
 
 
 @Module({
@@ -21,6 +22,8 @@ imports: [
     database: process.env.DB_NAME,
     autoLoadEntities: true,
   }),
+
+  CountySourcesModule,
 ]
 
 ,
