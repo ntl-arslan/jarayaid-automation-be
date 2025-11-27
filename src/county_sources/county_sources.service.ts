@@ -19,91 +19,91 @@ export class CountySourcesService {
 	) {}
 
 async createCountrySources(createCountrySourceDto: CreateCountriesInfoDto) {
-  try {
-    
-    const existingCountry = await this.countriesInfoRepo.findOne({
-      where: { country_id: createCountrySourceDto.country_id },
-      relations: ['sources'],
-    });
+	try {
+		
+		const existingCountry = await this.countriesInfoRepo.findOne({
+			where: { country_id: createCountrySourceDto.country_id },
+			relations: ['sources'],
+		});
 
-    if (existingCountry) {
-      return {
-        status: 'FAILURE',
-        statusCode: HttpStatus.CONFLICT,
-        message: 'Country already exists',
-        data: existingCountry,
-      };
-    }
+		if (existingCountry) {
+			return {
+				status: 'FAILURE',
+				statusCode: HttpStatus.CONFLICT,
+				message: 'Country already exists',
+				data: existingCountry,
+			};
+		}
 
-    // 2️⃣ Create country entity
-    const country = this.countriesInfoRepo.create({
-      country_id: createCountrySourceDto.country_id,
-      country_name: createCountrySourceDto.country_name,
-      country_arabic_name: createCountrySourceDto.country_arabic_name,
-      slug: createCountrySourceDto.slug,
-      type: createCountrySourceDto.type,
-      operator: createCountrySourceDto.operator,
-      status: createCountrySourceDto.status || 'ACTIVE',
-      datetime: new Date(),
-      modified_datetime: new Date(),
-    });
+		// 2️⃣ Create country entity
+		const country = this.countriesInfoRepo.create({
+			country_id: createCountrySourceDto.country_id,
+			country_name: createCountrySourceDto.country_name,
+			country_arabic_name: createCountrySourceDto.country_arabic_name,
+			slug: createCountrySourceDto.slug,
+			type: createCountrySourceDto.type,
+			operator: createCountrySourceDto.operator,
+			status: createCountrySourceDto.status || 'ACTIVE',
+			datetime: new Date(),
+			modified_datetime: new Date(),
+		});
 
-    const savedCountry = await this.countriesInfoRepo.save(country);
+		const savedCountry = await this.countriesInfoRepo.save(country);
 
-    // 3️⃣ Save sources if provided
-    if (createCountrySourceDto.sources && createCountrySourceDto.sources.length) {
-      for (const s of createCountrySourceDto.sources) {
-        // Check if this source already exists for this country
-        const existingSource = await this.countrySourcesRepo.findOne({
-          where: {
-            country_info_id: savedCountry.id,
-            news_source: s.news_source, // unique at country level
-          },
-        });
+		// 3️⃣ Save sources if provided
+		if (createCountrySourceDto.sources && createCountrySourceDto.sources.length) {
+			for (const s of createCountrySourceDto.sources) {
+				// Check if this source already exists for this country
+				const existingSource = await this.countrySourcesRepo.findOne({
+					where: {
+						country_info_id: savedCountry.id,
+						news_source: s.news_source, // unique at country level
+					},
+				});
 
-        if (existingSource) {
-          continue; // skip duplicate source
-        }
+				if (existingSource) {
+					continue; // skip duplicate source
+				}
 
-        const sourceEntity = this.countrySourcesRepo.create({
-          country_info_id: savedCountry.id,
-          source: s.source_name,
-          news_source: s.news_source,
-          type: s.source_type,
-          operator: createCountrySourceDto.operator,
-          status: 'ACTIVE',
-          joining_words: s.joining_words,
-          intro_music_path: s.intro_music_path,
-          datetime: new Date(),
-          modified_datetime: new Date(),
-        });
+				const sourceEntity = this.countrySourcesRepo.create({
+					country_info_id: savedCountry.id,
+					source: s.source_name,
+					news_source: s.news_source,
+					type: s.source_type,
+					operator: createCountrySourceDto.operator,
+					status: 'ACTIVE',
+					joining_words: s.joining_words,
+					intro_music_path: s.intro_music_path,
+					datetime: new Date(),
+					modified_datetime: new Date(),
+				});
 
-        await this.countrySourcesRepo.save(sourceEntity);
-      }
-    }
+				await this.countrySourcesRepo.save(sourceEntity);
+			}
+		}
 
-    // 4️⃣ Fetch country with sources to return
-    const countryWithSources = await this.countriesInfoRepo.findOne({
-      where: { id: savedCountry.id },
-      relations: ['sources'],
-    });
+		// 4️⃣ Fetch country with sources to return
+		const countryWithSources = await this.countriesInfoRepo.findOne({
+			where: { id: savedCountry.id },
+			relations: ['sources'],
+		});
 
-    return {
-      status: 'SUCCESS',
-      statusCode: HttpStatus.CREATED,
-      message: 'Country and sources created successfully',
-      data: countryWithSources,
-    };
-  } catch (err) {
-    console.error('Error creating country with sources:', err);
+		return {
+			status: 'SUCCESS',
+			statusCode: HttpStatus.CREATED,
+			message: 'Country and sources created successfully',
+			data: countryWithSources,
+		};
+	} catch (err) {
+		console.error('Error creating country with sources:', err);
 
-    return {
-      status: 'FAILURE',
-      statusCode: HttpStatus.EXPECTATION_FAILED,
-      message: 'Failed to create country and sources',
-      data: err.message,
-    };
-  }
+		return {
+			status: 'FAILURE',
+			statusCode: HttpStatus.EXPECTATION_FAILED,
+			message: 'Failed to create country and sources',
+			data: err.message,
+		};
+	}
 }
 
 
@@ -111,36 +111,36 @@ async createCountrySources(createCountrySourceDto: CreateCountriesInfoDto) {
 
 
 	async getAllCountySources() {
-  try {
-    // Fetch all countries with their sources
-    const getAllCountySources = await this.countriesInfoRepo.find({
-      relations: ['sources'], // include source info
-    });
+	try {
+		// Fetch all countries with their sources
+		const getAllCountySources = await this.countriesInfoRepo.find({
+			relations: ['sources'], // include source info
+		});
 
-    if (getAllCountySources.length > 0) {
-      return {
-        status: "SUCCESS",
-        statusCode: HttpStatus.OK,
-        message: 'Country Sources Fetched Successfully',
-        data: getAllCountySources,
-      };
-    } else {
-      return {
-        status: "FAILURE",
-        statusCode: HttpStatus.NOT_FOUND,
-        message: 'No Country Sources found',
-        data: [],
-      };
-    }
-  } catch (err) {
-    console.error('Error fetching country sources:', err);
-    return {
-      status: "FAILURE",
-      statusCode: HttpStatus.EXPECTATION_FAILED,
-      message: 'Error Fetching Country Sources',
-      data: [],
-    };
-  }
+		if (getAllCountySources.length > 0) {
+			return {
+				status: "SUCCESS",
+				statusCode: HttpStatus.OK,
+				message: 'Country Sources Fetched Successfully',
+				data: getAllCountySources,
+			};
+		} else {
+			return {
+				status: "FAILURE",
+				statusCode: HttpStatus.NOT_FOUND,
+				message: 'No Country Sources found',
+				data: [],
+			};
+		}
+	} catch (err) {
+		console.error('Error fetching country sources:', err);
+		return {
+			status: "FAILURE",
+			statusCode: HttpStatus.EXPECTATION_FAILED,
+			message: 'Error Fetching Country Sources',
+			data: [],
+		};
+	}
 }
 
 	 async updateCountrySources(id: number, updateCountriesInfoDto: UpdateCountriesInfoDto) {
@@ -215,96 +215,143 @@ async createCountrySources(createCountrySourceDto: CreateCountriesInfoDto) {
 		}
 	}
 	async getAllActiveCountySources() {
-  try {
-   
-    const getAllCountySources = await this.countriesInfoRepo.find({
-      where: { status: 'ACTIVE' },
-      relations: ['sources'],
-    });
+	try {
+	 
+		const getAllCountySources = await this.countriesInfoRepo.find({
+			where: { status: 'ACTIVE' },
+			relations: ['sources'],
+		});
 
-    
-    const filteredCountries = getAllCountySources.map(country => ({
-      ...country,
-      sources: country.sources?.filter(source => source.status === 'ACTIVE') || [],
-    }));
+		
+		const filteredCountries = getAllCountySources.map(country => ({
+			...country,
+			sources: country.sources?.filter(source => source.status === 'ACTIVE') || [],
+		}));
 
-    if (filteredCountries.length > 0) {
-      return {
-        status: "SUCCESS",
-        statusCode: HttpStatus.OK,
-        message: 'Active Country Sources Fetched Successfully',
-        data: filteredCountries,
-      };
-    } else {
-      return {
-        status: "FAILURE",
-        statusCode: HttpStatus.NOT_FOUND,
-        message: 'No Active Country Sources found',
-        data: [],
-      };
-    }
-  } catch (err) {
-    console.error('Error fetching active country sources:', err);
-    return {
-      status: "FAILURE",
-      statusCode: HttpStatus.EXPECTATION_FAILED,
-      message: 'Error Fetching Active Country Sources',
-      data: [],
-    };
-  }
+		if (filteredCountries.length > 0) {
+			return {
+				status: "SUCCESS",
+				statusCode: HttpStatus.OK,
+				message: 'Active Country Sources Fetched Successfully',
+				data: filteredCountries,
+			};
+		} else {
+			return {
+				status: "FAILURE",
+				statusCode: HttpStatus.NOT_FOUND,
+				message: 'No Active Country Sources found',
+				data: [],
+			};
+		}
+	} catch (err) {
+		console.error('Error fetching active country sources:', err);
+		return {
+			status: "FAILURE",
+			statusCode: HttpStatus.EXPECTATION_FAILED,
+			message: 'Error Fetching Active Country Sources',
+			data: [],
+		};
+	}
 }
 
 	async getAllCountySourcesByType(type: string) {
-  try {
-   
-    if (type !== CountryType.AUTO && type !== CountryType.MANUAL) {
-      return {
-        status: 'FAILURE',
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: 'Invalid Country Type Provided',
-        data: [],
-      };
-    }
+	try {
+	 
+		if (type !== CountryType.AUTO && type !== CountryType.MANUAL) {
+			return {
+				status: 'FAILURE',
+				statusCode: HttpStatus.BAD_REQUEST,
+				message: 'Invalid Country Type Provided',
+				data: [],
+			};
+		}
 
-    
-    const getAllCountySources = await this.countriesInfoRepo.find({
-      where: {
-        status: 'ACTIVE',
-        type: type,
-      },
-      relations: ['sources'], 
-    });
+		
+		const getAllCountySources = await this.countriesInfoRepo.find({
+			where: {
+				status: 'ACTIVE',
+				type: type,
+			},
+			relations: ['sources'], 
+		});
 
  
-    const filteredCountries = getAllCountySources.map(country => ({
-      ...country,
-      sources: country.sources?.filter(source => source.status === 'ACTIVE') || [],
-    }));
+		const filteredCountries = getAllCountySources.map(country => ({
+			...country,
+			sources: country.sources?.filter(source => source.status === 'ACTIVE') || [],
+		}));
 
-    if (filteredCountries.length > 0) {
-      return {
-        status: 'SUCCESS',
-        statusCode: HttpStatus.OK,
-        message: `Active ${type} Country Sources Fetched Successfully`,
-        data: filteredCountries,
-      };
-    } else {
+		if (filteredCountries.length > 0) {
+			return {
+				status: 'SUCCESS',
+				statusCode: HttpStatus.OK,
+				message: `Active ${type} Country Sources Fetched Successfully`,
+				data: filteredCountries,
+			};
+		} else {
+			return {
+				status: 'FAILURE',
+				statusCode: HttpStatus.NOT_FOUND,
+				message: `No ${type} Active Country Sources found`,
+				data: [],
+			};
+		}
+	} catch (err) {
+		console.error('Error fetching active country sources by type:', err);
+		return {
+			status: 'FAILURE',
+			statusCode: HttpStatus.EXPECTATION_FAILED,
+			message: 'Error Fetching Active Country Sources',
+			data: [],
+		};
+	}
+}
+
+async getSourcesByCountryID(countryID: number) {
+  try {
+    // Fetch country with sources
+    const country = await this.countriesInfoRepo.findOne({
+      where: { id: countryID },
+      relations: ['sources'],
+    });
+
+    if (!country) {
       return {
         status: 'FAILURE',
         statusCode: HttpStatus.NOT_FOUND,
-        message: `No ${type} Active Country Sources found`,
+        message: 'Country not found',
         data: [],
       };
     }
+
+    // Filter only ACTIVE sources
+    const activeSources = country.sources?.filter(s => s.status === 'ACTIVE') || [];
+
+    if (activeSources.length === 0) {
+      return {
+        status: 'FAILURE',
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'No active sources found for this country',
+        data: [],
+      };
+    }
+
+    return {
+      status: 'SUCCESS',
+      statusCode: HttpStatus.OK,
+      message: `Sources fetched successfully for country ID ${countryID}`,
+      data: activeSources,
+    };
   } catch (err) {
-    console.error('Error fetching active country sources by type:', err);
+    console.error('Error fetching sources by country ID:', err);
     return {
       status: 'FAILURE',
       statusCode: HttpStatus.EXPECTATION_FAILED,
-      message: 'Error Fetching Active Country Sources',
+      message: 'Error fetching sources',
       data: [],
     };
   }
 }
+
 
 }
