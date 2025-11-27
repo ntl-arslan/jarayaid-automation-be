@@ -4,6 +4,7 @@ import { CreateCountriesInfoDto } from './dto/create-county_source.dto';
 import { UpdateCountriesInfoDto } from './dto/update-county_source.dto';
 import { DeleteCountryInfoDto } from './dto/delete-country_source.dt';
 import { CountryType } from 'src/constants/constants';
+import { UpdateSourceDto } from './dto/update-source.dto';
 
 @Controller('country-sources')
 export class CountySourcesController {
@@ -56,7 +57,13 @@ async getSourcesByCountryID(
   return await this.countySourcesService.getSourcesByCountryID(countryID);
 }
 
-	
+	  @Put('sources/:sourceID')
+  async updateSourceByID(
+    @Param('sourceID', ParseIntPipe) sourceID: number,
+    @Body() updateSourceDto: UpdateSourceDto,
+  ) {
+    return await this.countySourcesService.updateCountrySourceByID(sourceID, updateSourceDto);
+  }
 	
 	
 	

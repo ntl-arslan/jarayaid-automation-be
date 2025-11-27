@@ -8,6 +8,7 @@ import { UpdateCountriesInfoDto } from './dto/update-county_source.dto';
 import { DeleteCountryInfoDto } from './dto/delete-country_source.dt';
 import { CountryType } from 'src/constants/constants';
 import { CountrySources } from './entities/country_source.entity';
+import { UpdateSourceDto } from './dto/update-source.dto';
 
 @Injectable()
 export class CountySourcesService {
@@ -352,6 +353,54 @@ async getSourcesByCountryID(countryID: number) {
     };
   }
 }
+async updateCountrySourceByID(
+  sourceID: number,
+  updateSourceDto: UpdateSourceDto,
+) {
+  try {
+		
+    const existingSource = await this.countrySourcesRepo.findOne({
+      where: { id: sourceID },
+    });
+
+    if (!existingSource) {
+      return {
+        status: 'FAILURE',
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'Source not found',
+        data: [],
+      };
+    }
+
+    // Perform update
+    await this.countrySourcesRepo.update(sourceID, {
+      ...updateSourceDto,
+      modified_datetime: new Date(),
+    });
+
+    // Fetch updated source
+    const updatedSource = await this.countrySourcesRepo.findOne({
+      where: { id: sourceID },
+    });
+
+    return {
+      status: 'SUCCESS',
+      statusCode: HttpStatus.OK,
+      message: 'Source updated successfully',
+      data: updatedSource,
+    };
+  } catch (err) {
+    console.error('Error updating source:', err);
+    return {
+      status: 'FAILURE',
+      statusCode: HttpStatus.EXPECTATION_FAILED,
+      message: 'Failed to update source',
+      data: err.message,
+    };
+  }
+}
+
+
 
 
 }
