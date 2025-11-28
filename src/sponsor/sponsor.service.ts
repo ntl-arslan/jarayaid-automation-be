@@ -64,6 +64,7 @@ export class SponsorService {
 				operator: createSponsorDto.operator,
 				datetime: new Date(),
 				modified_datetime: new Date(),
+				logo: createSponsorDto.logo
 			});
 
 			const savedSponsor = await this.sponsorRepo.save(sponsor);
@@ -153,6 +154,7 @@ async getAllSponsors() {
         enddate: sponsor.enddate,
         status: sponsor.status,
         operator: sponsor.operator,
+						logo: sponsor.logo,
         countries: countriesWithName,
       });
     }
@@ -218,6 +220,7 @@ async getAllActiveSponsors() {
           enddate: sponsor.enddate,
           status: sponsor.status,
           operator: sponsor.operator,
+					logo: sponsor.logo,
           countries: countriesWithName,
         });
       }
