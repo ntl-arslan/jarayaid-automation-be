@@ -242,5 +242,122 @@ async getAllActiveSponsors() {
   }
 }
 
+async updateSponsor(id: number, updateSponsorDto: UpdateSponsorDto) {
+  try {
+    // 1️⃣ Check if sponsor exists
+    const sponsor = await this.sponsorRepo.findOne({ where: { id } });
+    if (!sponsor) {
+      return {
+        status: 'FAILURE',
+        statusCode: HttpStatus.NOT_FOUND,
+        message: `Sponsor with ID ${id} not found`,
+        data: [],
+      };
+    }
+
+    // 2️⃣ Validate dates
+    if (updateSponsorDto.startdate && updateSponsorDto.enddate) {
+      const start = new Date(updateSponsorDto.startdate);
+      const end = new Date(updateSponsorDto.enddate);
+
+      if (start.getTime() === end.getTime()) {
+        return {
+          status: 'FAILURE',
+          statusCode: HttpStatus.CONFLICT,
+          message: 'Start date and end date cannot be the same',
+          data: [],
+        };
+      }
+      if (end.getTime() < start.getTime()) {
+        return {
+          status: 'FAILURE',
+          statusCode: HttpStatus.CONFLICT,
+          message: 'End date must be greater than start date',
+          data: [],
+        };
+      }
+    }
+
+    // 3️⃣ Update parent sponsor (exclude countries)
+    const { countries, ...parentFields } = updateSponsorDto;
+    await this.sponsorRepo.update(id, {
+      ...parentFields,
+      modified_datetime: new Date(),
+    });
+
+    // Fetch updated sponsor to return
+    const updatedSponsor = await this.sponsorRepo.findOne({ where: { id } });
+
+    // 4️⃣ Update child countries
+    if (countries?.length) {
+      const existingCountries = await this.sponsorCountriesRepo.find({
+        where: { sponsor_id: id },
+      });
+
+      const payloadCountryIds = countries.map(c => c.country_id);
+
+      // a) Deactivate countries missing in the new payload
+      const missingCountries = existingCountries.filter(
+        ec => !payloadCountryIds.includes(ec.country_id),
+      );
+      for (const mc of missingCountries) {
+        await this.sponsorCountriesRepo.update(
+          { id: mc.id },
+          { status: 'INACTIVE', modified_datetime: new Date() },
+        );
+      }
+
+      // b) Update existing or create new countries
+      for (const country of countries) {
+        const existing = existingCountries.find(
+          ec => ec.country_id === country.country_id,
+        );
+
+        if (existing) {
+          await this.sponsorCountriesRepo.update(
+            { id: existing.id },
+            {
+              status: country.status ?? 'ACTIVE',
+              operator: country.operator ?? updateSponsorDto.operator,
+              modified_datetime: new Date(),
+            },
+          );
+        } else {
+          const sc = this.sponsorCountriesRepo.create({
+            sponsor_id: id, // must set sponsor_id
+            country_id: country.country_id,
+            status: country.status ?? 'ACTIVE',
+            operator: country.operator ?? updateSponsorDto.operator,
+            datetime: new Date(),
+            modified_datetime: new Date(),
+          });
+          await this.sponsorCountriesRepo.save(sc);
+        }
+      }
+    }
+
+    return {
+      status: 'SUCCESS',
+      statusCode: HttpStatus.OK,
+      message: 'Sponsor updated successfully',
+      data: {
+        sponsor: updatedSponsor,
+      },
+    };
+  } catch (err) {
+    return {
+      status: 'FAILURE',
+      statusCode: HttpStatus.EXPECTATION_FAILED,
+      message: 'Failed to update sponsor',
+      data: err.message,
+    };
+  }
+}
+
+
+
+
+
+
 
 }
