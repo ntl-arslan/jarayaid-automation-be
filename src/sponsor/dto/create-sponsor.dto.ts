@@ -26,6 +26,10 @@ export class CreateSponsorDto {
   @IsOptional()
   @IsString()
   operator?: string;
+  
+    @IsOptional()
+  @IsString()
+  logo?: string;
 
   @IsArray()
   @ValidateNested({ each: true })

@@ -30,6 +30,9 @@ export class Sponsor {
 
   @Column({ type: 'timestamp', default: () => 'NOW()' })
   modified_datetime: Date;
+  
+   @Column({ length: 255 })
+  logo: string;
 
   @OneToMany(() => SponsorCountry, (sc) => sc.sponsor)
   countries: SponsorCountry[];
