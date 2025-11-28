@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { SponsorService } from './sponsor.service';
 import { CreateSponsorDto } from './dto/create-sponsor.dto';
 import { UpdateSponsorDto } from './dto/update-sponsor.dto';
@@ -21,4 +21,12 @@ export class SponsorController {
 	async getAllActiveSponsors() {
 		return this.sponsorService.getAllActiveSponsors();
 	}	
+	@Put(':id')
+  async updateSponsor(
+    @Param('id') id: number,
+    @Body() updateSponsorDto: UpdateSponsorDto,
+  ) {
+  
+    return this.sponsorService.updateSponsor(id, updateSponsorDto);
+  }
 }
