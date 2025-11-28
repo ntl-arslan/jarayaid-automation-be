@@ -15,49 +15,64 @@ export class UploadSchedulerService {
   ) {}
 
   async createUploadScheduler(
-    createUploadSchedulerDto: CreateUploadSchedulerDto,
-  ) {
-    try {
+  createUploadSchedulerDto: CreateUploadSchedulerDto,
+) {
+  try {
+    const results = [];
+    const schedulers = createUploadSchedulerDto.schedulers;
+
+    for (const item of schedulers) {
+      // Check if country exists
       const isCountryExists = await this.countriesInfoRepo.findOne({
         where: {
-          id: createUploadSchedulerDto.country_id,
+          id: item.country_id,
           status: 'ACTIVE',
         },
       });
 
       if (!isCountryExists) {
-        return {
+        results.push({
+          country_id: item.country_id,
           status: 'FAILURE',
-          statusCode: HttpStatus.NOT_FOUND,
-          message: `Country with ID ${createUploadSchedulerDto.country_id} not found or inactive`,
-          data: [],
-        };
+          message: `Country with ID ${item.country_id} not found or inactive`,
+        });
+        continue; 
       }
 
+   
       const scheduler = this.uploadSchedulerRepo.create({
-        ...createUploadSchedulerDto,
+        ...item,
         datetime: new Date(),
         modified_datetime: new Date(),
         status: 'ACTIVE',
       });
+
       const saved = await this.uploadSchedulerRepo.save(scheduler);
 
-      return {
+      results.push({
+        country_id: item.country_id,
         status: 'SUCCESS',
-        statusCode: HttpStatus.CREATED,
-        message: 'Upload scheduler created successfully',
         data: saved,
-      };
-    } catch (err) {
-      console.error(err);
-      return {
-        status: 'FAILURE',
-        statusCode: HttpStatus.EXPECTATION_FAILED,
-        message: 'Failed to create upload scheduler',
-        data: err.message,
-      };
+      });
     }
+
+    return {
+      status: 'SUCCESS',
+      statusCode: HttpStatus.CREATED,
+      message: 'Upload schedulers processed',
+      data: results,
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      status: 'FAILURE',
+      statusCode: HttpStatus.EXPECTATION_FAILED,
+      message: 'Failed to process upload schedulers',
+      data: err.message,
+    };
   }
+}
+
 
   async getAllUploadSchedulers() {
     try {
