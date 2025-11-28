@@ -1,21 +1,11 @@
-import { IsInt, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ValidateNested, IsArray } from 'class-validator';
+import { UploadSchedulerItemDto } from './upload-scheduler-items.dto';
+
 
 export class CreateUploadSchedulerDto {
-  @IsInt()
-  country_id: number;
-
-  @IsString()
-  key: string;
-
-  @IsOptional()
-  @IsString()
-  value?: string;
-  
-   @IsOptional()
-  @IsString()
-  platform?: string;
-
-  @IsOptional()
-  @IsString()
-  operator?: string;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => UploadSchedulerItemDto)
+  schedulers: UploadSchedulerItemDto[];
 }
