@@ -22,7 +22,7 @@ export class UploadSchedulerService {
     const schedulers = createUploadSchedulerDto.schedulers;
 
     for (const item of schedulers) {
-      // Check if country exists
+    
       const isCountryExists = await this.countriesInfoRepo.findOne({
         where: {
           id: item.country_id,

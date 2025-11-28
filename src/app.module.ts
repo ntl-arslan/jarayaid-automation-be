@@ -5,6 +5,8 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { CountySourcesModule } from './county_sources/county_sources.module';
 import { UploadSchedulerModule } from './upload-scheduler/upload-scheduler.module';
+import { SponsorModule } from './sponsor/sponsor.module';
+import { SponsorCountriesModule } from './sponsor-countries/sponsor-countries.module';
 
 @Module({
   imports: [
@@ -26,6 +28,10 @@ import { UploadSchedulerModule } from './upload-scheduler/upload-scheduler.modul
     CountySourcesModule,
 
     UploadSchedulerModule,
+
+    SponsorModule,
+
+    SponsorCountriesModule,
   ],
 
   controllers: [AppController],
