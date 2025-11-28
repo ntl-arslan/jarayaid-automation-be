@@ -7,8 +7,10 @@ import { CountriesInfo } from 'src/county_sources/entities/county_info.entity';
 import { CountrySources } from 'src/county_sources/entities/country_source.entity';
 
 @Module({
-	 imports: [TypeOrmModule.forFeature([UploadScheduler,CountriesInfo,CountrySources,])],
-	controllers: [UploadSchedulerController],
-	providers: [UploadSchedulerService],
+  imports: [
+    TypeOrmModule.forFeature([UploadScheduler, CountriesInfo, CountrySources]),
+  ],
+  controllers: [UploadSchedulerController],
+  providers: [UploadSchedulerService],
 })
 export class UploadSchedulerModule {}

@@ -6,30 +6,27 @@ import { ConfigModule } from '@nestjs/config';
 import { CountySourcesModule } from './county_sources/county_sources.module';
 import { UploadSchedulerModule } from './upload-scheduler/upload-scheduler.module';
 
-
 @Module({
-imports: [
-  ConfigModule.forRoot({
-    isGlobal: true,
-    envFilePath: '.env',
-  }),
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
 
-  TypeOrmModule.forRoot({
-    type: 'postgres',
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT),
-    username: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-    autoLoadEntities: true,
-  }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      username: process.env.DB_USER,
+      password: process.env.DB_PASS,
+      database: process.env.DB_NAME,
+      autoLoadEntities: true,
+    }),
 
-  CountySourcesModule,
+    CountySourcesModule,
 
-  UploadSchedulerModule,
-]
-
-,
+    UploadSchedulerModule,
+  ],
 
   controllers: [AppController],
   providers: [AppService],
