@@ -93,7 +93,7 @@ async getScriptGeneration() {
 }
 async updateScriptGeneration(id: number, updateDto: UpdateScriptGenerationDto) {
   try {
-   if(updateDto.approval_status && updateDto.approval_status==='REJECT' && !updateDto.cancellation_remarks)
+   if(updateDto.approval_status && updateDto.approval_status==='REJECTED' && !updateDto.cancellation_remarks)
 	{
 		  return {
         status: 'FAILURE',
