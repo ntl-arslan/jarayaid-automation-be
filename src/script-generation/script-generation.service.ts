@@ -93,7 +93,15 @@ async getScriptGeneration() {
 }
 async updateScriptGeneration(id: number, updateDto: UpdateScriptGenerationDto) {
   try {
-    // Validate status if provided
+   if(updateDto.approval_status && updateDto.approval_status==='REJECT' && !updateDto.cancellation_remarks)
+	{
+		  return {
+        status: 'FAILURE',
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: "Cancellation Remarks are must",
+        data: [],
+      };
+	}
     if (updateDto.approval_status && !['APPROVED', 'REJECTED'].includes(updateDto.approval_status)) {
       return {
         status: 'FAILURE',
