@@ -91,5 +91,58 @@ async getScriptGeneration() {
 		};
 	}
 }
+async updateScriptGeneration(id: number, updateDto: UpdateScriptGenerationDto) {
+  try {
+    // Validate status if provided
+    if (updateDto.status && !['APPROVED', 'REJECTED'].includes(updateDto.status)) {
+      return {
+        status: 'FAILURE',
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: "Status must be either 'APPROVED' or 'REJECTED'",
+        data: [],
+      };
+    }
+
+    // Update only if current status is PENDING
+    const result = await this.scriptGenerationRepo
+      .createQueryBuilder()
+      .update()
+      .set({
+        approval_status: updateDto.status,
+        operator: updateDto.operator,
+        cancellation_remarks: updateDto.cancellation_remarks,
+        modified_datetime: new Date(),
+      })
+      .where("id = :id", { id })
+      .andWhere("approval_status = 'PENDING'")
+      .returning("*") // get updated row
+      .execute();
+
+    if (result.affected === 0) {
+      return {
+        status: 'FAILURE',
+        statusCode: HttpStatus.CONFLICT,
+        message: "Script either does not exist or status is not PENDING",
+        data: [],
+      };
+    }
+
+    return {
+      status: 'SUCCESS',
+      statusCode: HttpStatus.OK,
+      message: 'Script generation updated successfully',
+      data: result.raw[0], // returning the updated row
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      status: 'FAILURE',
+      statusCode: HttpStatus.EXPECTATION_FAILED,
+      message: 'Failed to update script generation',
+      data: err.message,
+    };
+  }
+}
+
 
 }
