@@ -7,6 +7,7 @@ import { CountySourcesModule } from './county_sources/county_sources.module';
 import { UploadSchedulerModule } from './upload-scheduler/upload-scheduler.module';
 import { SponsorModule } from './sponsor/sponsor.module';
 import { SponsorCountriesModule } from './sponsor-countries/sponsor-countries.module';
+import { ScriptGenerationModule } from './script-generation/script-generation.module';
 
 @Module({
   imports: [
@@ -32,6 +33,8 @@ import { SponsorCountriesModule } from './sponsor-countries/sponsor-countries.mo
     SponsorModule,
 
     SponsorCountriesModule,
+
+    ScriptGenerationModule,
   ],
 
   controllers: [AppController],

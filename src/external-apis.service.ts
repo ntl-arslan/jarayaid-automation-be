@@ -5,9 +5,47 @@ import { map, catchError } from 'rxjs/operators';
 
 @Injectable()
 export class ExternalApiService {
-  constructor(private readonly httpService: HttpService) {}
-    
-  async getCountryById(country_id: number) {
+	constructor(private readonly httpService: HttpService) {}
+		
+	async getCountryById(country_id: number) {
+	try {
+		const response = await firstValueFrom(
+			this.httpService
+				.get(`${process.env.JARAYID_BE_URL}/admin-dashboard/getCategories`)
+				.pipe(
+					map(res => res.data),
+					catchError(err => {
+						throw new HttpException(
+							'Failed to fetch categories',
+							HttpStatus.BAD_GATEWAY,
+						);
+					}),
+				),
+		);
+
+		const country = response.data.find(
+			(c: any) => c.ID === Number(country_id) && c.TYPE === 'country',
+		);
+
+		if (!country) {
+			throw new HttpException('Country not found', HttpStatus.NOT_FOUND);
+		}
+
+		return {
+			id: country.ID,
+			name: country.NAME,
+			arabic_name: country.ARABIC_NAME,
+			status: country.STATUS,
+			sequence: country.SEQUENCE,
+		};
+	} catch (err) {
+		throw new HttpException(
+			err.message,
+			err.status || HttpStatus.INTERNAL_SERVER_ERROR,
+		);
+	}
+}
+async getAllCountries() {
   try {
     const response = await firstValueFrom(
       this.httpService
@@ -23,21 +61,28 @@ export class ExternalApiService {
         ),
     );
 
-    const country = response.data.find(
-      (c: any) => c.ID === Number(country_id) && c.TYPE === 'country',
-    );
+    // Filter only country-type categories
+    const countries = response.data
+      .filter((c: any) => c.TYPE === 'country')
+      .map((country: any) => ({
+        id: country.ID,
+        name: country.NAME,
+        arabic_name: country.ARABIC_NAME,
+        status: country.STATUS,
+        sequence: country.SEQUENCE,
+      }));
 
-    if (!country) {
-      throw new HttpException('Country not found', HttpStatus.NOT_FOUND);
+    if (countries.length === 0) {
+      throw new HttpException('No countries found', HttpStatus.NOT_FOUND);
     }
 
     return {
-      id: country.ID,
-      name: country.NAME,
-      arabic_name: country.ARABIC_NAME,
-      status: country.STATUS,
-      sequence: country.SEQUENCE,
+      status: 'SUCCESS',
+      statusCode: HttpStatus.OK,
+      message: 'Countries fetched successfully',
+      data: countries,
     };
+
   } catch (err) {
     throw new HttpException(
       err.message,
@@ -45,5 +90,6 @@ export class ExternalApiService {
     );
   }
 }
+
 
 }
