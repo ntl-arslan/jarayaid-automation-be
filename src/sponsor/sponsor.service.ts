@@ -120,7 +120,7 @@ async getAllSponsors() {
 
     for (const sponsor of sponsors) {
       const countries = await this.sponsorCountriesRepo.find({
-        where: { sponsor_id: sponsor.id },
+        where: { sponsor_id: sponsor.id, status: 'ACTIVE' },
       });
 
       const countriesWithName = [];
@@ -300,6 +300,7 @@ async updateSponsor(id: number, updateSponsorDto: UpdateSponsorDto) {
       const missingCountries = existingCountries.filter(
         ec => !payloadCountryIds.includes(ec.country_id),
       );
+
       for (const mc of missingCountries) {
         await this.sponsorCountriesRepo.update(
           { id: mc.id },
