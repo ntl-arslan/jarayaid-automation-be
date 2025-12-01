@@ -94,7 +94,7 @@ async getScriptGeneration() {
 async updateScriptGeneration(id: number, updateDto: UpdateScriptGenerationDto) {
   try {
     // Validate status if provided
-    if (updateDto.status && !['APPROVED', 'REJECTED'].includes(updateDto.status)) {
+    if (updateDto.approval_status && !['APPROVED', 'REJECTED'].includes(updateDto.approval_status)) {
       return {
         status: 'FAILURE',
         statusCode: HttpStatus.BAD_REQUEST,
@@ -108,14 +108,14 @@ async updateScriptGeneration(id: number, updateDto: UpdateScriptGenerationDto) {
       .createQueryBuilder()
       .update()
       .set({
-        approval_status: updateDto.status,
+        approval_status: updateDto.approval_status,
         operator: updateDto.operator,
         cancellation_remarks: updateDto.cancellation_remarks,
         modified_datetime: new Date(),
       })
       .where("id = :id", { id })
       .andWhere("approval_status = 'PENDING'")
-      .returning("*") // get updated row
+      .returning("*") 
       .execute();
 
     if (result.affected === 0) {

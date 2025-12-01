@@ -6,7 +6,7 @@ export class UpdateScriptGenerationDto {
   @IsIn(['APPROVED', 'REJECTED'], {
     message: 'Status must be either APPROVED or REJECTED',
   })
-  status?: string;
+  approval_status?: string;
 
   @IsOptional()
   @IsString()
