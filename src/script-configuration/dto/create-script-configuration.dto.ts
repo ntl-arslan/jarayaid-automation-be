@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsInt } from 'class-validator';
+import { IsNotEmpty, IsString, IsInt, IsOptional } from 'class-validator';
 
 export class CreateScriptConfigurationDto {
  
@@ -11,11 +11,11 @@ export class CreateScriptConfigurationDto {
   @IsString()
   value: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsInt()
   sequence: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   operator: string;
 }
