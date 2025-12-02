@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ScriptConfiguration } from './entities/script-configuration.entity';
 import { Repository } from 'typeorm';
 import { SCRIPT_CONFIGURATION_KEYS } from 'src/constants/constants';
+import { DeleteScriptConfigurationDto } from './dto/delete-script-configuration.dto';
 
 @Injectable()
 export class ScriptConfigurationService {
@@ -16,13 +17,13 @@ export class ScriptConfigurationService {
 	async createScriptConfiguration(createDto: CreateScriptConfigurationDto) {
 	try {
 		if (!Object.values(SCRIPT_CONFIGURATION_KEYS).includes(createDto.key as SCRIPT_CONFIGURATION_KEYS)) {
-      return {
-        status: 'FAILURE',
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: `Invalid key. Allowed keys are: ${Object.values(SCRIPT_CONFIGURATION_KEYS).join(', ')}`,
-        data: [],
-      };
-    }
+	  return {
+		status: 'FAILURE',
+		statusCode: HttpStatus.BAD_REQUEST,
+		message: `Invalid key. Allowed keys are: ${Object.values(SCRIPT_CONFIGURATION_KEYS).join(', ')}`,
+		data: [],
+	  };
+	}
 		
 		const existing = await this.scriptConfigurationRepo.findOne({
 			where: { key: createDto.key, status: 'ACTIVE' },
@@ -144,6 +145,65 @@ async updateScriptConfiguration(
 			status: 'FAILURE',
 			statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
 			message: 'Failed to update script configuration',
+			data: err.message,
+		};
+	}
+}
+
+
+async deleteScriptConfiguration(id: number, deleteScriptConfigurationDto: DeleteScriptConfigurationDto) {
+	try {
+		const existing = await this.scriptConfigurationRepo.findOne({ where: { id } });
+
+		if (!existing) {
+			return {
+				status: 'FAILURE',
+				statusCode: HttpStatus.NOT_FOUND,
+				message: 'Scripts Configuration not found',
+				data: [],
+			};
+		}
+
+		
+
+		// Validate status from FE
+		const allowedStatuses = ['ACTIVE', 'INACTIVE'];
+		if (deleteScriptConfigurationDto.status && !allowedStatuses.includes(deleteScriptConfigurationDto.status)) {
+			return {
+				status: 'FAILURE',
+				statusCode: HttpStatus.BAD_REQUEST,
+				message: `Status must be one of: ${allowedStatuses.join(', ')}`,
+				data: [],
+			};
+		}
+
+		const updateJoiningWords = await this.scriptConfigurationRepo.update(id, {
+			...deleteScriptConfigurationDto,
+			modified_datetime: new Date(),
+		});
+
+		if (updateJoiningWords.affected) {
+			const updatedRecord = await this.scriptConfigurationRepo.findOne({ where: { id } });
+			return {
+				status: 'SUCCESS',
+				statusCode: HttpStatus.OK,
+				message: `Script Configuration ${deleteScriptConfigurationDto.status} successfully`,
+				data: updatedRecord,
+			};
+		} else {
+			return {
+				status: 'FAILURE',
+				statusCode: HttpStatus.BAD_REQUEST,
+				message: `Script Configuration was not ${deleteScriptConfigurationDto.status} successfully`,
+				data: [],
+			};
+		}
+	} catch (err) {
+		console.error('Error update Script Configuration:', err);
+		return {
+			status: 'FAILURE',
+			statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+			message: 'Failed to update Script Configuration',
 			data: err.message,
 		};
 	}

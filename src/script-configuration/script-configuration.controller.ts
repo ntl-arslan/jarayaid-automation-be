@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/
 import { ScriptConfigurationService } from './script-configuration.service';
 import { CreateScriptConfigurationDto } from './dto/create-script-configuration.dto';
 import { UpdateScriptConfigurationDto } from './dto/update-script-configuration.dto';
+import { DeleteScriptConfigurationDto } from './dto/delete-script-configuration.dto';
+
 
 @Controller('script-configuration')
 export class ScriptConfigurationController {
@@ -23,6 +25,14 @@ updateScriptConfiguration(
   @Body() updateDto: UpdateScriptConfigurationDto,
 ) {
   return this.scriptConfigurationService.updateScriptConfiguration(id, updateDto);
+}
+
+@Put('/updateScriptConfiguration/:id')
+deleteScriptConfiguration(
+	@Param('id') id: number,
+	@Body() deleteScriptConfigurationDto: DeleteScriptConfigurationDto
+) {
+	return this.scriptConfigurationService.deleteScriptConfiguration(id, deleteScriptConfigurationDto);
 }
 
 

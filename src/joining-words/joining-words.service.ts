@@ -215,11 +215,11 @@ async deleteJoiningWords(id: number, deleteJoiningWordsDto: DeleteJoiningWordsDt
 			};
 		}
 	} catch (err) {
-		console.error('Error deleting joining word:', err);
+		console.error('Error deleting updating word:', err);
 		return {
 			status: 'FAILURE',
 			statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-			message: 'Failed to delete joining word',
+			message: 'Failed to update joining word',
 			data: err.message,
 		};
 	}
