@@ -4,6 +4,7 @@ import { UpdateJoiningWordDto } from './dto/update-joining-word.dto';
 import { JoiningWords } from './entities/joining-word.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { DeleteJoiningWordsDto } from './dto/delete-joining-words.dto';
 
 @Injectable()
 export class JoiningWordsService {
@@ -93,6 +94,57 @@ async getAllActiveJoiningWords() {
 	}
 }
 async updateJoiningWord(id: number, updateDto:UpdateJoiningWordDto) {
+	try {
+		const existing = await this.joiningWordRepo.findOne({ where: { id } });
+
+		if (!existing) {
+			return {
+				status: 'FAILURE',
+				statusCode: HttpStatus.NOT_FOUND,
+				message: 'Joining word not found',
+				data: [],
+			};
+		}
+
+		const updateJoiningWords=await this.joiningWordRepo.update(id, {
+			...updateDto,
+			modified_datetime: new Date(),
+		} as unknown);
+
+	 if (updateJoiningWords.affected) {
+	const updatedRecord = await this.joiningWordRepo.findOne({ where: { id } });
+	return {
+		status: 'SUCCESS',
+		statusCode: HttpStatus.OK,
+		message: 'Joining word updated successfully',
+		data: updatedRecord,
+	};
+}
+
+		else
+			{
+					return {
+			status: 'FAILURE',
+			statusCode: HttpStatus.BAD_REQUEST,
+			message: 'Joining word does not updated successfully',
+			data: [],
+		};
+			}
+
+		
+	} catch (err) {
+		console.error('Error updating joining word:', err);
+
+		return {
+			status: 'FAILURE',
+			statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+			message: 'Failed to update joining word',
+			data: err.message,
+		};
+	}
+}
+
+async deleteJoiningWords(id: number, deleteJoiningWordsDto: DeleteJoiningWordsDto) {
   try {
     const existing = await this.joiningWordRepo.findOne({ where: { id } });
 
@@ -105,43 +157,52 @@ async updateJoiningWord(id: number, updateDto:UpdateJoiningWordDto) {
       };
     }
 
-    const updateJoiningWords=await this.joiningWordRepo.update(id, {
-      ...updateDto,
-      modified_datetime: new Date(),
-    } as unknown);
-
-   if (updateJoiningWords.affected) {
-  const updatedRecord = await this.joiningWordRepo.findOne({ where: { id } });
-  return {
-    status: 'SUCCESS',
-    statusCode: HttpStatus.OK,
-    message: 'Joining word updated successfully',
-    data: updatedRecord,
-  };
-}
-
-		else
-			{
-					return {
-      status: 'FAILURE',
-      statusCode: HttpStatus.BAD_REQUEST,
-      message: 'Joining word does not updated successfully',
-      data: [],
-    };
-			}
-
     
-  } catch (err) {
-    console.error('Error updating joining word:', err);
 
+    // Validate status from FE
+    const allowedStatuses = ['ACTIVE', 'INACTIVE'];
+    if (deleteJoiningWordsDto.status && !allowedStatuses.includes(deleteJoiningWordsDto.status)) {
+      return {
+        status: 'FAILURE',
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: `Status must be one of: ${allowedStatuses.join(', ')}`,
+        data: [],
+      };
+    }
+
+    const updateJoiningWords = await this.joiningWordRepo.update(id, {
+      ...deleteJoiningWordsDto,
+      modified_datetime: new Date(),
+    });
+
+    if (updateJoiningWords.affected) {
+      const updatedRecord = await this.joiningWordRepo.findOne({ where: { id } });
+      return {
+        status: 'SUCCESS',
+        statusCode: HttpStatus.OK,
+        message: `Joining word ${deleteJoiningWordsDto.status} successfully`,
+        data: updatedRecord,
+      };
+    } else {
+      return {
+        status: 'FAILURE',
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: `Joining word was not ${deleteJoiningWordsDto.status} successfully`,
+        data: [],
+      };
+    }
+  } catch (err) {
+    console.error('Error deleting joining word:', err);
     return {
       status: 'FAILURE',
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Failed to update joining word',
+      message: 'Failed to delete joining word',
       data: err.message,
     };
   }
 }
+
+
 
 
 
