@@ -7,6 +7,7 @@ import { HttpModule } from '@nestjs/axios';
 import { ExternalApiService } from 'src/external-apis.service';
 import { ScriptGeneration } from './entities/script-generation.entity';
 
+
 @Module({
   imports: [
         TypeOrmModule.forFeature([ScriptGeneration,CountriesInfo]),

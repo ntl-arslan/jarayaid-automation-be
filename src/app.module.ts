@@ -9,6 +9,7 @@ import { SponsorModule } from './sponsor/sponsor.module';
 import { SponsorCountriesModule } from './sponsor-countries/sponsor-countries.module';
 import { ScriptGenerationModule } from './script-generation/script-generation.module';
 import { JoiningWordsModule } from './joining-words/joining-words.module';
+import { ScriptConfigurationModule } from './script-configuration/script-configuration.module';
 
 @Module({
   imports: [
@@ -38,6 +39,8 @@ import { JoiningWordsModule } from './joining-words/joining-words.module';
     ScriptGenerationModule,
 
     JoiningWordsModule,
+
+    ScriptConfigurationModule,
   ],
 
   controllers: [AppController],

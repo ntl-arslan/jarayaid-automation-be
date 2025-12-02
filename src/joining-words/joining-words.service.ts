@@ -93,6 +93,29 @@ async getAllActiveJoiningWords() {
 		};
 	}
 }
+async getAllJoiningWords() {
+	try {
+		const activeWords = await this.joiningWordRepo.find({
+			order: { datetime: 'DESC' },
+		});
+
+		return {
+			status: 'SUCCESS',
+			statusCode: HttpStatus.OK,
+			message: 'All joining words fetched successfully',
+			data: activeWords,
+		};
+	} catch (err) {
+		console.error('Error fetching active joining words:', err);
+
+		return {
+			status: 'FAILURE',
+			statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+			message: 'Failed to fetch joining words',
+			data: err.message,
+		};
+	}
+}
 async updateJoiningWord(id: number, updateDto:UpdateJoiningWordDto) {
 	try {
 		const existing = await this.joiningWordRepo.findOne({ where: { id } });
@@ -145,61 +168,61 @@ async updateJoiningWord(id: number, updateDto:UpdateJoiningWordDto) {
 }
 
 async deleteJoiningWords(id: number, deleteJoiningWordsDto: DeleteJoiningWordsDto) {
-  try {
-    const existing = await this.joiningWordRepo.findOne({ where: { id } });
+	try {
+		const existing = await this.joiningWordRepo.findOne({ where: { id } });
 
-    if (!existing) {
-      return {
-        status: 'FAILURE',
-        statusCode: HttpStatus.NOT_FOUND,
-        message: 'Joining word not found',
-        data: [],
-      };
-    }
+		if (!existing) {
+			return {
+				status: 'FAILURE',
+				statusCode: HttpStatus.NOT_FOUND,
+				message: 'Joining word not found',
+				data: [],
+			};
+		}
 
-    
+		
 
-    // Validate status from FE
-    const allowedStatuses = ['ACTIVE', 'INACTIVE'];
-    if (deleteJoiningWordsDto.status && !allowedStatuses.includes(deleteJoiningWordsDto.status)) {
-      return {
-        status: 'FAILURE',
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: `Status must be one of: ${allowedStatuses.join(', ')}`,
-        data: [],
-      };
-    }
+		// Validate status from FE
+		const allowedStatuses = ['ACTIVE', 'INACTIVE'];
+		if (deleteJoiningWordsDto.status && !allowedStatuses.includes(deleteJoiningWordsDto.status)) {
+			return {
+				status: 'FAILURE',
+				statusCode: HttpStatus.BAD_REQUEST,
+				message: `Status must be one of: ${allowedStatuses.join(', ')}`,
+				data: [],
+			};
+		}
 
-    const updateJoiningWords = await this.joiningWordRepo.update(id, {
-      ...deleteJoiningWordsDto,
-      modified_datetime: new Date(),
-    });
+		const updateJoiningWords = await this.joiningWordRepo.update(id, {
+			...deleteJoiningWordsDto,
+			modified_datetime: new Date(),
+		});
 
-    if (updateJoiningWords.affected) {
-      const updatedRecord = await this.joiningWordRepo.findOne({ where: { id } });
-      return {
-        status: 'SUCCESS',
-        statusCode: HttpStatus.OK,
-        message: `Joining word ${deleteJoiningWordsDto.status} successfully`,
-        data: updatedRecord,
-      };
-    } else {
-      return {
-        status: 'FAILURE',
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: `Joining word was not ${deleteJoiningWordsDto.status} successfully`,
-        data: [],
-      };
-    }
-  } catch (err) {
-    console.error('Error deleting joining word:', err);
-    return {
-      status: 'FAILURE',
-      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Failed to delete joining word',
-      data: err.message,
-    };
-  }
+		if (updateJoiningWords.affected) {
+			const updatedRecord = await this.joiningWordRepo.findOne({ where: { id } });
+			return {
+				status: 'SUCCESS',
+				statusCode: HttpStatus.OK,
+				message: `Joining word ${deleteJoiningWordsDto.status} successfully`,
+				data: updatedRecord,
+			};
+		} else {
+			return {
+				status: 'FAILURE',
+				statusCode: HttpStatus.BAD_REQUEST,
+				message: `Joining word was not ${deleteJoiningWordsDto.status} successfully`,
+				data: [],
+			};
+		}
+	} catch (err) {
+		console.error('Error deleting joining word:', err);
+		return {
+			status: 'FAILURE',
+			statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+			message: 'Failed to delete joining word',
+			data: err.message,
+		};
+	}
 }
 
 

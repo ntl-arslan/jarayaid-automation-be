@@ -1,6 +1,7 @@
 
 import { CountriesInfo } from 'src/county_sources/entities/county_info.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { ScriptConfiguration } from 'src/script-configuration/entities/script-configuration.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 
 @Entity({ name: 'script_generation' })
 export class ScriptGeneration {
@@ -37,6 +38,8 @@ cancellation_remarks?: string;
 	@ManyToOne(() => CountriesInfo, (country) => country.scripts, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'country_info_id' })
 	country: CountriesInfo;
+	
+
 }
 
 

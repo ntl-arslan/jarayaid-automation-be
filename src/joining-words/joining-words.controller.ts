@@ -17,6 +17,10 @@ export class JoiningWordsController {
 getAllActive() {
 	return this.joiningWordsService.getAllActiveJoiningWords();
 }
+	@Get('')
+getAllJoiningWords() {
+	return this.joiningWordsService.getAllJoiningWords();
+}
 @Put(':id')
 updateJoiningWord(
 	@Param('id') id: number,
@@ -27,10 +31,10 @@ updateJoiningWord(
 
 @Put('/updateJoiningWords/:id')
 deleteJoiningWords(
-  @Param('id') id: number,
-  @Body() deleteJoiningWordsDto: DeleteJoiningWordsDto
+	@Param('id') id: number,
+	@Body() deleteJoiningWordsDto: DeleteJoiningWordsDto
 ) {
-  return this.joiningWordsService.deleteJoiningWords(id, deleteJoiningWordsDto);
+	return this.joiningWordsService.deleteJoiningWords(id, deleteJoiningWordsDto);
 }
 
 
