@@ -8,6 +8,7 @@ import { UploadSchedulerModule } from './upload-scheduler/upload-scheduler.modul
 import { SponsorModule } from './sponsor/sponsor.module';
 import { SponsorCountriesModule } from './sponsor-countries/sponsor-countries.module';
 import { ScriptGenerationModule } from './script-generation/script-generation.module';
+import { JoiningWordsModule } from './joining-words/joining-words.module';
 
 @Module({
   imports: [
@@ -35,6 +36,8 @@ import { ScriptGenerationModule } from './script-generation/script-generation.mo
     SponsorCountriesModule,
 
     ScriptGenerationModule,
+
+    JoiningWordsModule,
   ],
 
   controllers: [AppController],
