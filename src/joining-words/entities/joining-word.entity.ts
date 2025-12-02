@@ -24,5 +24,5 @@ export class JoiningWords {
   datetime: Date;
 
   @UpdateDateColumn({ name: 'modified_datetime', type: 'timestamp' })
-  modified_dateTime: Date;
+  modified_datetime: Date;
 }

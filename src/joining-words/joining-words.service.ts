@@ -69,29 +69,80 @@ export class JoiningWordsService {
 	}
 }
 async getAllActiveJoiningWords() {
-  try {
-    const activeWords = await this.joiningWordRepo.find({
-      where: { status: 'ACTIVE' },
-      order: { datetime: 'DESC' },
-    });
+	try {
+		const activeWords = await this.joiningWordRepo.find({
+			where: { status: 'ACTIVE' },
+			order: { datetime: 'DESC' },
+		});
 
-    return {
-      status: 'SUCCESS',
-      statusCode: HttpStatus.OK,
-      message: 'Active joining words fetched successfully',
-      data: activeWords,
+		return {
+			status: 'SUCCESS',
+			statusCode: HttpStatus.OK,
+			message: 'Active joining words fetched successfully',
+			data: activeWords,
+		};
+	} catch (err) {
+		console.error('Error fetching active joining words:', err);
+
+		return {
+			status: 'FAILURE',
+			statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+			message: 'Failed to fetch joining words',
+			data: err.message,
+		};
+	}
+}
+async updateJoiningWord(id: number, updateDto:UpdateJoiningWordDto) {
+  try {
+    const existing = await this.joiningWordRepo.findOne({ where: { id } });
+
+    if (!existing) {
+      return {
+        status: 'FAILURE',
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'Joining word not found',
+        data: [],
+      };
+    }
+
+    const updateJoiningWords=await this.joiningWordRepo.update(id, {
+      ...updateDto,
+      modified_datetime: new Date(),
+    } as unknown);
+
+   if (updateJoiningWords.affected) {
+  const updatedRecord = await this.joiningWordRepo.findOne({ where: { id } });
+  return {
+    status: 'SUCCESS',
+    statusCode: HttpStatus.OK,
+    message: 'Joining word updated successfully',
+    data: updatedRecord,
+  };
+}
+
+		else
+			{
+					return {
+      status: 'FAILURE',
+      statusCode: HttpStatus.BAD_REQUEST,
+      message: 'Joining word does not updated successfully',
+      data: [],
     };
+			}
+
+    
   } catch (err) {
-    console.error('Error fetching active joining words:', err);
+    console.error('Error updating joining word:', err);
 
     return {
       status: 'FAILURE',
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Failed to fetch joining words',
+      message: 'Failed to update joining word',
       data: err.message,
     };
   }
 }
+
 
 
 }

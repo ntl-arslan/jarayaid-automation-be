@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { JoiningWordsService } from './joining-words.service';
 import { CreateJoiningWordDto } from './dto/create-joining-word.dto';
+import { UpdateJoiningWordDto } from './dto/update-joining-word.dto';
 
 
 @Controller('joining-words')
@@ -15,4 +16,13 @@ export class JoiningWordsController {
 getAllActive() {
   return this.joiningWordsService.getAllActiveJoiningWords();
 }
+@Put(':id')
+update(
+  @Param('id') id: number,
+  @Body() updateJoiningWordDto: UpdateJoiningWordDto
+) {
+  return this.joiningWordsService.updateJoiningWord(id, updateJoiningWordDto);
+}
+
+
 }
