@@ -314,7 +314,7 @@ export class CountySourcesService {
   async getSourcesByCountryID(countryID: number) {
     try {
       const country = await this.countriesInfoRepo.findOne({
-        where: { id: countryID },
+        where: { country_id: countryID },
         relations: ['sources'],
       });
 

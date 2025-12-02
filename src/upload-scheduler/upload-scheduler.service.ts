@@ -169,7 +169,7 @@ export class UploadSchedulerService {
 
           if (!acc[countryId]) {
             acc[countryId] = {
-              COUNTRY_ID: countryId,
+              COUNTRY_ID: item.country.country_id,
               COUNTRY_NAME: item.country?.country_name || '',
               // PLATFORMS: {}, // each platform will have its keys as columns
             };
