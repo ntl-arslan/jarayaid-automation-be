@@ -11,5 +11,8 @@ export class JoiningWordsController {
   create(@Body() createJoiningWordDto: CreateJoiningWordDto) {
     return this.joiningWordsService.createJoiningWords(createJoiningWordDto);
   }
-
+  @Get('active')
+getAllActive() {
+  return this.joiningWordsService.getAllActiveJoiningWords();
+}
 }
