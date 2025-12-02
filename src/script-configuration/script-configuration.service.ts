@@ -4,6 +4,7 @@ import { UpdateScriptConfigurationDto } from './dto/update-script-configuration.
 import { InjectRepository } from '@nestjs/typeorm';
 import { ScriptConfiguration } from './entities/script-configuration.entity';
 import { Repository } from 'typeorm';
+import { SCRIPT_CONFIGURATION_KEYS } from 'src/constants/constants';
 
 @Injectable()
 export class ScriptConfigurationService {
@@ -14,7 +15,15 @@ export class ScriptConfigurationService {
 			) {}
 	async createScriptConfiguration(createDto: CreateScriptConfigurationDto) {
 	try {
-	 
+		if (!Object.values(SCRIPT_CONFIGURATION_KEYS).includes(createDto.key as SCRIPT_CONFIGURATION_KEYS)) {
+      return {
+        status: 'FAILURE',
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: `Invalid key. Allowed keys are: ${Object.values(SCRIPT_CONFIGURATION_KEYS).join(', ')}`,
+        data: [],
+      };
+    }
+		
 		const existing = await this.scriptConfigurationRepo.findOne({
 			where: { key: createDto.key, status: 'ACTIVE' },
 		});
@@ -91,53 +100,53 @@ async getAllScriptConfigurations() {
 }
 
 async updateScriptConfiguration(
-  id: number,
-  updateDto: UpdateScriptConfigurationDto,
+	id: number,
+	updateDto: UpdateScriptConfigurationDto,
 ) {
-  try {
-    const existing = await this.scriptConfigurationRepo.findOne({ where: { id } });
+	try {
+		const existing = await this.scriptConfigurationRepo.findOne({ where: { id } });
 
-    if (!existing) {
-      return {
-        status: 'FAILURE',
-        statusCode: HttpStatus.NOT_FOUND,
-        message: 'Script configuration not found',
-        data: [],
-      };
-    }
+		if (!existing) {
+			return {
+				status: 'FAILURE',
+				statusCode: HttpStatus.NOT_FOUND,
+				message: 'Script configuration not found',
+				data: [],
+			};
+		}
 
-    const updateObj = {
-      ...updateDto,
-      modified_datetime: new Date(),
-    };
+		const updateObj = {
+			...updateDto,
+			modified_datetime: new Date(),
+		};
 
-    const updateResult = await this.scriptConfigurationRepo.update(id, updateObj);
+		const updateResult = await this.scriptConfigurationRepo.update(id, updateObj);
 
-    if (updateResult.affected) {
-      const updatedRecord = await this.scriptConfigurationRepo.findOne({ where: { id } });
-      return {
-        status: 'SUCCESS',
-        statusCode: HttpStatus.OK,
-        message: 'Script configuration updated successfully',
-        data: updatedRecord,
-      };
-    } else {
-      return {
-        status: 'FAILURE',
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: 'Script configuration was not updated successfully',
-        data: [],
-      };
-    }
-  } catch (err) {
-    console.error('Error updating script configuration:', err);
-    return {
-      status: 'FAILURE',
-      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Failed to update script configuration',
-      data: err.message,
-    };
-  }
+		if (updateResult.affected) {
+			const updatedRecord = await this.scriptConfigurationRepo.findOne({ where: { id } });
+			return {
+				status: 'SUCCESS',
+				statusCode: HttpStatus.OK,
+				message: 'Script configuration updated successfully',
+				data: updatedRecord,
+			};
+		} else {
+			return {
+				status: 'FAILURE',
+				statusCode: HttpStatus.BAD_REQUEST,
+				message: 'Script configuration was not updated successfully',
+				data: [],
+			};
+		}
+	} catch (err) {
+		console.error('Error updating script configuration:', err);
+		return {
+			status: 'FAILURE',
+			statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+			message: 'Failed to update script configuration',
+			data: err.message,
+		};
+	}
 }
 
 

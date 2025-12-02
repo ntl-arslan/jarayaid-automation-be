@@ -1,4 +1,10 @@
 export enum CountryType {
-  AUTO = 'AUTO',
-  MANUAL = 'MANUAL',
+	AUTO = 'AUTO',
+	MANUAL = 'MANUAL',
+}
+
+export enum SCRIPT_CONFIGURATION_KEYS {
+	INTRO_MESSAGE = 'INTRO',
+	OUTRO_MESSAGE = 'OUTRO',
+	CUSTOM_MESSAGE = 'CUSTOM'
 }
