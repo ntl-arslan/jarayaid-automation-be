@@ -39,6 +39,9 @@ export class CountrySources {
 
   @Column({ type: 'varchar', length: 500, nullable: true })
   intro_music_path?: string;
+  
+  @Column({ type: 'int', nullable: true })
+  jarayid_source_id?: string;
 
   @CreateDateColumn({ type: 'timestamp' })
   datetime: Date;

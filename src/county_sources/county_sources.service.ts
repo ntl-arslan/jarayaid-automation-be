@@ -327,10 +327,7 @@ export class CountySourcesService {
         };
       }
 
-      const activeSources =
-        country.sources?.filter((s) => s.status === 'ACTIVE') || [];
-
-      if (activeSources.length === 0) {
+      if (country?.sources.length === 0) {
         return {
           status: 'FAILURE',
           statusCode: HttpStatus.NOT_FOUND,
@@ -343,7 +340,7 @@ export class CountySourcesService {
         status: 'SUCCESS',
         statusCode: HttpStatus.OK,
         message: `Sources fetched successfully for country ID ${countryID}`,
-        data: activeSources,
+        data: country?.sources,
       };
     } catch (err) {
       console.error('Error fetching sources by country ID:', err);
