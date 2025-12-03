@@ -1,74 +1,72 @@
 import {
-  IsInt,
-  IsOptional,
-  IsString,
-  IsIn,
-  IsNumber,
-  IsArray,
-  ValidateNested,
+	IsInt,
+	IsOptional,
+	IsString,
+	IsIn,
+	IsNumber,
+	IsArray,
+	ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateCountrySourceDto {
-  @IsString()
-  news_source: string;
+	
+		@IsNumber()
+	jarayid_country_id: string;
 
-  @IsString()
-  source_name: string;
+		@IsNumber()
+	jarayid_source_id: string;
+	
+	@IsString()
+	@IsOptional()
+	news_source: string;
 
-  @IsOptional()
-  @IsString()
-  source_type?: string;
+	@IsString()
+	@IsOptional()
+	source_name: string;
 
-  @IsOptional()
-  @IsString()
-  joining_words?: string;       
+	@IsOptional()
+	@IsString()
+	source_type?: string;
 
-  @IsOptional()
-  @IsString()
-  intro_music_path?: string;
+	@IsOptional()
+	@IsString()
+	joining_words?: string;       
 
-  @IsOptional()
-  @IsNumber()
-  article_count?: number;
+	@IsOptional()
+	@IsString()
+	intro_music_path?: string;
 
-  @IsOptional()
-  @IsNumber()
-  sequence?: number;
+	@IsOptional()
+	@IsNumber()
+	article_count?: number;
+
+	@IsOptional()
+	@IsNumber()
+	sequence?: number;
+
+		@IsString()
+	@IsOptional()
+	operator?: string;
 }
 export class CreateCountriesInfoDto {
-  @IsNumber()
-  country_id: number;
+	@IsNumber()
+	country_id: number;
 
-  @IsString()
-  country_name: string;
 
-  @IsString()
-  @IsOptional()
-  country_arabic_name?: string;
 
-  @IsOptional()
-  @IsString()
-  slug?: string;
+	@IsString()
+	@IsIn(['AUTO', 'MANUAL'], { message: 'Type must be either AUTO or MANUAL' })
+	type?: string;
 
-  @IsString()
-  @IsIn(['AUTO', 'MANUAL'], { message: 'Type must be either AUTO or MANUAL' })
-  type?: string;
+	@IsString()
+	@IsOptional()
+	operator?: string;
 
-  @IsString()
-  @IsOptional()
-  operator?: string;
 
-  @IsString()
-  @IsIn(['ACTIVE', 'INACTIVE'], {
-    message: 'Status must be either ACTIVE or INACTIVE',
-  })
-  status?: string;
-
-  
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateCountrySourceDto)
-  @IsOptional()
-  sources?: CreateCountrySourceDto[];
+	@IsArray()
+	@ValidateNested({ each: true })
+	@Type(() => CreateCountrySourceDto)
+	@IsOptional()
+	sources?: CreateCountrySourceDto[];
 }

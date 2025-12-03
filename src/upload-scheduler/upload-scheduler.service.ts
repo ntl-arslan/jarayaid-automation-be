@@ -370,7 +370,15 @@ export class UploadSchedulerService {
       };
     }
 
- 
+	const allowedStatuses = ['ACTIVE', 'INACTIVE'];
+		if (deleteUploadSchedulerDto.status && !allowedStatuses.includes(deleteUploadSchedulerDto.status)) {
+			return {
+				status: 'FAILURE',
+				statusCode: HttpStatus.BAD_REQUEST,
+				message: `Status must be one of: ${allowedStatuses.join(', ')}`,
+				data: [],
+			};
+		}
     const { status, operator } = deleteUploadSchedulerDto;
 
     await this.uploadSchedulerRepo.update(

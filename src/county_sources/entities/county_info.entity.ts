@@ -11,14 +11,6 @@ export class CountriesInfo {
 	@Column({ type: 'int' })
 	country_id: number;
 
-	@Column({ type: 'varchar', length: 255 })
-	country_name: string;
-
-	@Column({ type: 'varchar', length: 255, nullable: true })
-	country_arabic_name?: string;
-
-	@Column({ type: 'varchar', length: 255, nullable: true })
-	slug?: string;
 
 	@Column({ type: 'varchar', length: 100, nullable: true })
 	type?: string;
@@ -35,8 +27,6 @@ export class CountriesInfo {
 	@Column({ type: 'varchar', length: 50, nullable: true })
 	status?: string;
 
-	@OneToMany(() => CountrySources, (source) => source.country)
-	sources: CountrySources[];
 
 	// @OneToMany(() => UploadScheduler, (scheduler) => scheduler.country)
 	// uploadSchedulers: UploadScheduler[];
