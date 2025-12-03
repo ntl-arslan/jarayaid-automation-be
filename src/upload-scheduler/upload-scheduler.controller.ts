@@ -58,7 +58,7 @@ export class UploadSchedulerController {
 		);
 	}
 	
-	  @Put(':countryID')
+	  @Put('/country/:countryID')
   async updateSchedulerByCountryID(
     @Param('countryID') countryID: number,
     @Body() deleteUploadSchedulerDto: DeleteUploadSchedulerDto,
