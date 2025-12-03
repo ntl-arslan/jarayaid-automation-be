@@ -62,6 +62,10 @@ export class CreateCountriesInfoDto {
 	@IsString()
 	@IsOptional()
 	operator?: string;
+	
+	@IsString()
+	@IsOptional()
+	status?: string;
 
 
 	@IsArray()

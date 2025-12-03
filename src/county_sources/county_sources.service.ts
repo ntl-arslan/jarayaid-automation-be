@@ -23,7 +23,7 @@ export class CountySourcesService {
 		try {
 			const existingCountry = await this.countriesInfoRepo.findOne({
 				where: { country_id: createCountrySourceDto.country_id },
-				relations: ['sources'],
+				// relations: ['sources'],
 			});
 
 			if (existingCountry) {
@@ -86,7 +86,7 @@ export class CountySourcesService {
 			// 4️⃣ Fetch country with sources to return
 			const countryWithSources = await this.countriesInfoRepo.findOne({
 				where: { id: savedCountry.id },
-				relations: ['sources'],
+				// relations: ['sources'],
 			});
 
 			return {
