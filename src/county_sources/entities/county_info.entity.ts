@@ -38,8 +38,8 @@ export class CountriesInfo {
 	@OneToMany(() => CountrySources, (source) => source.country)
 	sources: CountrySources[];
 
-	@OneToMany(() => UploadScheduler, (scheduler) => scheduler.country)
-	uploadSchedulers: UploadScheduler[];
+	// @OneToMany(() => UploadScheduler, (scheduler) => scheduler.country)
+	// uploadSchedulers: UploadScheduler[];
 
 	@OneToMany(() => ScriptGeneration, (sg) => sg.country)
 	scripts: ScriptGeneration[];

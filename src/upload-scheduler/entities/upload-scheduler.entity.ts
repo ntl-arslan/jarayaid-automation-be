@@ -39,9 +39,9 @@ export class UploadScheduler {
   @Column({ type: 'varchar', length: 50, nullable: true })
   status?: string;
 
-  @ManyToOne(() => CountriesInfo, (country) => country.uploadSchedulers, {
-	onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'country_id' })
-  country: CountriesInfo;
+  // @ManyToOne(() => CountriesInfo, (country) => country.uploadSchedulers, {
+	// onDelete: 'CASCADE',
+  // })
+  // @JoinColumn({ name: 'country_id' })
+  // country: CountriesInfo;
 }
