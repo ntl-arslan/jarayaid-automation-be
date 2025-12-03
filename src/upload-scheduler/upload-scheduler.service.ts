@@ -78,7 +78,7 @@ export class UploadSchedulerService {
     try {
       // Fetch all schedulers with country info
       const schedulers = await this.uploadSchedulerRepo.find({
-        relations: ['country'],
+        
       });
 
       if (schedulers.length === 0) {
@@ -98,7 +98,7 @@ export class UploadSchedulerService {
           if (!acc[countryId]) {
             acc[countryId] = {
               COUNTRY_ID: countryId,
-              COUNTRY_NAME: item.country?.country_name || '',
+            
               // PLATFORMS: {}, // each platform will have its keys as columns
             };
           }
@@ -109,7 +109,7 @@ export class UploadSchedulerService {
 
           // Add key-value pair to the specific platform
           acc[countryId][item.platform][item.key] = item.value;
-
+             acc[countryId]['STATUS'] = item.status;
           // Optional: include other common fields per platform
           // acc[countryId].PLATFORMS[item.platform]['UPLOAD_FREQUENCY'] =
           //   item.UPLOAD_FREQUENCY || 'DAILY';
@@ -144,13 +144,11 @@ export class UploadSchedulerService {
       // Fetch all schedulers with country info
       const schedulers = await this.uploadSchedulerRepo
         .createQueryBuilder('scheduler')
-        .leftJoinAndSelect('scheduler.country', 'country')
+       
         .where('scheduler.status = :schedulerStatus', {
           schedulerStatus: 'ACTIVE',
         })
-        .andWhere('country.status = :countryStatus', {
-          countryStatus: 'ACTIVE',
-        })
+       
         .getMany();
 
       if (schedulers.length === 0) {
@@ -169,8 +167,8 @@ export class UploadSchedulerService {
 
           if (!acc[countryId]) {
             acc[countryId] = {
-              COUNTRY_ID: item.country.country_id,
-              COUNTRY_NAME: item.country?.country_name || '',
+              COUNTRY_ID: item.country_id,
+            
               // PLATFORMS: {}, // each platform will have its keys as columns
             };
           }
@@ -181,6 +179,8 @@ export class UploadSchedulerService {
 
           // Add key-value pair to the specific platform
           acc[countryId][item.platform][item.key] = item.value;
+          acc[countryId]['STATUS'] = item.status;
+
 
           // Optional: include other common fields per platform
           // acc[countryId].PLATFORMS[item.platform]['UPLOAD_FREQUENCY'] =
@@ -267,7 +267,7 @@ export class UploadSchedulerService {
     try {
       const scheduler = await this.uploadSchedulerRepo.findOne({
         where: { id },
-        relations: ['country'],
+      
       });
 
       if (!scheduler) {
@@ -298,10 +298,10 @@ export class UploadSchedulerService {
   async getUploadSchedulerByCountryID(countryID: number) {
     try {
       const schedulers = await this.uploadSchedulerRepo.find({
-        relations: ['country'],
+ 
         where: { country_id: countryID },
       });
-
+       
       if (schedulers.length === 0) {
         return {
           status: 'FAILURE',
@@ -318,7 +318,7 @@ export class UploadSchedulerService {
           if (!acc[countryId]) {
             acc[countryId] = {
               COUNTRY_ID: countryId,
-              COUNTRY_NAME: item.country?.country_name || '',
+            
             };
           }
 
@@ -327,7 +327,7 @@ export class UploadSchedulerService {
           }
 
           acc[countryId][item.platform][item.key] = item.value;
-
+          acc[countryId]['STATUS'] = item.status;
           return acc;
         },
         {} as Record<number, any>,
