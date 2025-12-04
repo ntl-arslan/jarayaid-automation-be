@@ -13,6 +13,7 @@ import { UploadSchedulerService } from './upload-scheduler.service';
 import { CreateUploadSchedulerDto } from './dto/create-upload-scheduler.dto';
 import { UpdateUploadSchedulerDto } from './dto/update-upload-scheduler.dto';
 import { DeleteUploadSchedulerDto } from './dto/delete-upload-scheduler.dto';
+import { UpdateBulkSchedulerDto } from './dto/bulk-update-scheduler.dto';
 
 @Controller('upload-scheduler')
 export class UploadSchedulerController {
@@ -60,12 +61,22 @@ export class UploadSchedulerController {
 	
 	  @Put('/country/:countryID')
   async updateSchedulerByCountryID(
-    @Param('countryID') countryID: number,
-    @Body() deleteUploadSchedulerDto: DeleteUploadSchedulerDto,
+	@Param('countryID') countryID: number,
+	@Body() deleteUploadSchedulerDto: DeleteUploadSchedulerDto,
   ) {
-    return await this.uploadSchedulerService.updateSchedulerByCountryID(
-      countryID,
-      deleteUploadSchedulerDto,
-    );
+	return await this.uploadSchedulerService.updateSchedulerByCountryID(
+	  countryID,
+	  deleteUploadSchedulerDto,
+	);
   }
+  
+  //BULK UPDATE SCHEDULER
+  @Put('/bulk/scheduler')
+	async bulkUpdateSource(
+		@Body() updateBulkSchedulerDto: UpdateBulkSchedulerDto,
+	) {
+		return await this.uploadSchedulerService.bulkUpdateScheduler(
+			updateBulkSchedulerDto,
+		);
+	}
 }

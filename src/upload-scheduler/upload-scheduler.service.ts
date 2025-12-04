@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { CountriesInfo } from 'src/county_sources/entities/county_info.entity';
 import { UpdateUploadSchedulerDto } from './dto/update-upload-scheduler.dto';
 import { DeleteUploadSchedulerDto } from './dto/delete-upload-scheduler.dto';
+import { UpdateBulkSchedulerDto } from './dto/bulk-update-scheduler.dto';
 @Injectable()
 export class UploadSchedulerService {
 	constructor(
@@ -339,19 +340,19 @@ export class UploadSchedulerService {
 
 	async updateSchedulerByCountryID(countryID: number, deleteUploadSchedulerDto: DeleteUploadSchedulerDto) {
   try {
-    
-    const isExists = await this.uploadSchedulerRepo.findOne({
-      where: { country_id: countryID },
-    });
+	
+	const isExists = await this.uploadSchedulerRepo.findOne({
+	  where: { country_id: countryID },
+	});
 
-    if (!isExists) {
-      return {
-        status: 'FAILURE',
-        statusCode: HttpStatus.NOT_FOUND,
-        message: 'No scheduler found for this country ID',
-        data: [],
-      };
-    }
+	if (!isExists) {
+	  return {
+		status: 'FAILURE',
+		statusCode: HttpStatus.NOT_FOUND,
+		message: 'No scheduler found for this country ID',
+		data: [],
+	  };
+	}
 
 	const allowedStatuses = ['ACTIVE', 'INACTIVE'];
 		if (deleteUploadSchedulerDto.status && !allowedStatuses.includes(deleteUploadSchedulerDto.status)) {
@@ -362,35 +363,76 @@ export class UploadSchedulerService {
 				data: [],
 			};
 		}
-    const { status, operator } = deleteUploadSchedulerDto;
+	const { status, operator } = deleteUploadSchedulerDto;
 
-    await this.uploadSchedulerRepo.update(
-      { country_id: countryID },
-      {
-        status: status,
-        operator: operator,
-        modified_datetime: () => 'NOW()',
-      }
-    );
+	await this.uploadSchedulerRepo.update(
+	  { country_id: countryID },
+	  {
+		status: status,
+		operator: operator,
+		modified_datetime: () => 'NOW()',
+	  }
+	);
 
-    return {
-      status: 'SUCCESS',
-      statusCode: HttpStatus.OK,
-      message: 'Scheduler updated successfully',
-      data: {
-        country_id: countryID,
-        status,
-        operator,
-      },
-    };
+	return {
+	  status: 'SUCCESS',
+	  statusCode: HttpStatus.OK,
+	  message: 'Scheduler updated successfully',
+	  data: {
+		country_id: countryID,
+		status,
+		operator,
+	  },
+	};
   } catch (err) {
-    return {
-      status: 'FAILURE',
-      statusCode: HttpStatus.EXPECTATION_FAILED,
-      message: 'Error updating status of upload scheduler',
-      data: err.message,
-    };
+	return {
+	  status: 'FAILURE',
+	  statusCode: HttpStatus.EXPECTATION_FAILED,
+	  message: 'Error updating status of upload scheduler',
+	  data: err.message,
+	};
   }
 }
+
+
+ async bulkUpdateScheduler(updateBulkSchedulerDto: UpdateBulkSchedulerDto) {
+	try {
+	  const dataArray = updateBulkSchedulerDto.items;
+
+	  for (const item of dataArray) {
+		if (item?.id) {
+		  await this.uploadSchedulerRepo.update(
+			{ id: item.id } as any,
+			{
+			  ...item,
+			  modified_datetime: new Date(),
+			} as any,
+		  );
+		} else {
+		  await this.uploadSchedulerRepo.save({
+			...item,
+			datetime: new Date(),
+			modified_datetime: new Date(),
+			status: 'INACTIVE',
+		  } as any);
+		}
+	  }
+
+	  return {
+		status: 'SUCCESS',
+		statusCode: HttpStatus.OK,
+		message: 'Scheduler Updated Successfully',
+		data: [],
+	  };
+	} catch (err) {
+	  console.error('Bulk update error:', err);
+	  return {
+		status: 'FAILURE',
+		statusCode: HttpStatus.EXPECTATION_FAILED,
+		message: 'Error Updating Scheduler',
+		data: [],
+	  };
+	}
+  }
 
 }
