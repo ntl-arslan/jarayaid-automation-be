@@ -23,23 +23,6 @@ export class UploadSchedulerService {
 		const schedulers = createUploadSchedulerDto.schedulers;
 
 		for (const item of schedulers) {
-		
-			const isCountryExists = await this.countriesInfoRepo.findOne({
-				where: {
-					id: item.country_id,
-					status: 'ACTIVE',
-				},
-			});
-
-			if (!isCountryExists) {
-				results.push({
-					country_id: item.country_id,
-					status: 'FAILURE',
-					message: `Country with ID ${item.country_id} not found or inactive`,
-				});
-				continue; 
-			}
-
 	 
 			const scheduler = this.uploadSchedulerRepo.create({
 				...item,
