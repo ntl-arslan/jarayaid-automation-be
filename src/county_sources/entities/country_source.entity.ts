@@ -10,8 +10,6 @@ export class CountrySources {
 	@PrimaryGeneratedColumn()
 	id: number;
 
-
-
 	@Column({ type: 'varchar', length: 255, nullable: true })
 	source?: string;
 

@@ -15,6 +15,7 @@ import { UpdateCountriesInfoDto } from './dto/update-county_source.dto';
 import { DeleteCountryInfoDto } from './dto/delete-country_source.dt';
 import { CountryType } from 'src/constants/constants';
 import { UpdateSourceDto } from './dto/update-source.dto';
+import { UpdateBulkSourceDto } from './dto/update-bulk-sources-dto';
 
 @Controller('country-sources')
 export class CountySourcesController {
@@ -28,9 +29,9 @@ export class CountySourcesController {
 	}
 	@Post('source')
   createSource(@Body() createCountrySourceDto: CreateCountrySourceDto) {
-    return this.countySourcesService.createSource(
-      createCountrySourceDto,
-    );
+	return this.countySourcesService.createSource(
+	  createCountrySourceDto,
+	);
   }
 
 	@Get()
@@ -83,6 +84,16 @@ export class CountySourcesController {
 		return await this.countySourcesService.updateCountrySourceByID(
 			sourceID,
 			updateSourceDto,
+		);
+	}
+	
+		//BULK UPDATE SOURCE DTO
+	@Put('/bulk/sources')
+	async bulkUpdateSource(
+		@Body() updateBulkSourceDto: UpdateBulkSourceDto,
+	) {
+		return await this.countySourcesService.bulkUpdateSource(
+			updateBulkSourceDto,
 		);
 	}
 }
