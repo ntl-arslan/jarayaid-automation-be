@@ -10,6 +10,8 @@ import { SponsorCountriesModule } from './sponsor-countries/sponsor-countries.mo
 import { ScriptGenerationModule } from './script-generation/script-generation.module';
 import { JoiningWordsModule } from './joining-words/joining-words.module';
 import { ScriptConfigurationModule } from './script-configuration/script-configuration.module';
+import { YoutubeModule } from './upload-scripts/youtube.module';
+import { OpenAIModule } from './open-ai/open-ai.module';
 
 @Module({
   imports: [
@@ -41,6 +43,10 @@ import { ScriptConfigurationModule } from './script-configuration/script-configu
     JoiningWordsModule,
 
     ScriptConfigurationModule,
+    
+    YoutubeModule,
+    
+    OpenAIModule
   ],
 
   controllers: [AppController],
