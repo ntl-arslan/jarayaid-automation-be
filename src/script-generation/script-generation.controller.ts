@@ -21,6 +21,9 @@ export class ScriptGenerationController {
   }
 	
 
-
+  @Get("all")
+	getAllScripts() {
+		return this.scriptGenerationService.getAllScripts();
+	}
 	
 }

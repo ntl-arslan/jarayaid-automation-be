@@ -152,5 +152,77 @@ async updateScriptGeneration(id: number, updateDto: UpdateScriptGenerationDto) {
   }
 }
 
+async getAllScripts() {
+  try {
+    // 1. Fetch all countries from external API
+    const getAllCountries = await this.externalApiService.getAllCountries();
+
+    if (getAllCountries.status !== 'SUCCESS') {
+      return {
+        status: 'FAILURE',
+        statusCode: HttpStatus.CONFLICT,
+        message: 'No Country Exists',
+        data: [],
+      };
+    }
+
+    const allCountriesData = getAllCountries.data; // external API countries list
+
+    // 2. Get all active script generation records
+    const activeScripts = await this.scriptGenerationRepo
+      .createQueryBuilder('sg')
+      .innerJoinAndSelect('sg.country', 'ci')
+      .orderBy('sg.datetime', 'DESC')
+      .getMany();
+
+    if (activeScripts.length === 0) {
+      return {
+        status: 'FAILURE',
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'No active script generation records found',
+        data: [],
+      };
+    }
+
+    // 3. Merge external country info using ci.country_id mapping
+    const finalResult = activeScripts.map((record: any) => {
+      const ci = record.country;
+
+      // Find external country by ID
+      const externalCountry = allCountriesData.find(
+        (ext: any) => ext.id === ci.country_id
+      );
+
+      return {
+        id: record.id,
+        prompt: record.prompt,
+        status: record.status,
+        approval_status: record.approval_status,
+        video_gen_status: record.video_gen_status,
+        operator: record.operator,
+        datetime: record.datetime,
+        modified_datetime: record.modified_datetime,
+        country_name: externalCountry?.name || ci.name,
+        country_id: externalCountry?.id || ci.country_id,
+      };
+    });
+
+    return {
+      status: 'SUCCESS',
+      statusCode: HttpStatus.OK,
+      message: 'Active scripts fetched successfully',
+      data: finalResult,
+    };
+  } catch (err) {
+    console.error('Error fetching active scripts:', err);
+    return {
+      status: 'FAILURE',
+      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Error fetching active scripts',
+      data: err.message,
+    };
+  }
+}
+
 
 }
