@@ -106,7 +106,7 @@ export class HeygenService {
       // -------------------------
       const variables = {
         sponsor_logo: {
-          name:sponsor.name,
+          name:"sponsor_logo",
           type: 'image',
           properties: {
            url: sponsor.logo || 'https://raw.githubusercontent.com/Furqan-Tariq/Jarayaid-Testing/ccfa219ad19d72faeb2e8242859606e5237c5af2/sponsor_logo.jpeg',

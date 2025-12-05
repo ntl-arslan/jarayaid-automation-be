@@ -3,6 +3,7 @@ import {
 	CreateDateColumn, UpdateDateColumn, JoinColumn 
 } from 'typeorm';
 import { CountriesInfo } from './county_info.entity';
+import { JoiningWords } from 'src/joining-words/entities/joining-word.entity';
 
 
 @Entity('country_sources')
@@ -48,6 +49,12 @@ export class CountrySources {
 	
 	 @Column({ type: 'int',  nullable: true })
  	 jarayid_country_id?: number;
+   
+   @Column({ type: 'varchar', length: 255,  nullable: true })
+   jarayid_rss_source_id?: string;
 	
+  @ManyToOne(() => JoiningWords, (joiningWord) => joiningWord.sources, { onDelete: 'CASCADE' })
+	@JoinColumn({ name: 'joining_words' })
+	joiningWord: JoiningWords;
 
 }

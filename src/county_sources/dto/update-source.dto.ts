@@ -28,6 +28,10 @@ export class UpdateSourceDto {
   @IsOptional()
   @IsNumber()
   sequence?: number;
+  
+  @IsOptional()
+  @IsString()
+  jarayid_rss_source_id?: string;
 
   @IsOptional()
   @IsString()

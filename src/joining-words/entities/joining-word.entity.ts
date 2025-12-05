@@ -1,9 +1,11 @@
+import { CountrySources } from 'src/county_sources/entities/country_source.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity({ name: 'joining_words' })
@@ -25,4 +27,7 @@ export class JoiningWords {
 
   @UpdateDateColumn({ name: 'modified_datetime', type: 'timestamp' })
   modified_datetime: Date;
+  
+ 	@OneToMany(() => CountrySources, (cs) => cs.joining_words)
+	sources: CountrySources[];
 }
