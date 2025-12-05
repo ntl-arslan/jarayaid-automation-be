@@ -10,6 +10,7 @@ import { SponsorCountriesModule } from './sponsor-countries/sponsor-countries.mo
 import { ScriptGenerationModule } from './script-generation/script-generation.module';
 import { JoiningWordsModule } from './joining-words/joining-words.module';
 import { ScriptConfigurationModule } from './script-configuration/script-configuration.module';
+import { HygenModule } from './hygen/hygen.module';
 
 @Module({
   imports: [
@@ -41,6 +42,8 @@ import { ScriptConfigurationModule } from './script-configuration/script-configu
     JoiningWordsModule,
 
     ScriptConfigurationModule,
+
+    HygenModule,
   ],
 
   controllers: [AppController],

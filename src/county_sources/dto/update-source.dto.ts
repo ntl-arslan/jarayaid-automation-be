@@ -14,8 +14,8 @@ export class UpdateSourceDto {
   type?: string;
 
   @IsOptional()
-  @IsString()
-  joining_words?: string;
+  @IsNumber()
+  joining_words?: number;
 
   @IsOptional()
   @IsString()
