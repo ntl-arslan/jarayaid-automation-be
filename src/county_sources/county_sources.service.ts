@@ -334,7 +334,7 @@ export class CountySourcesService {
   //   }
   // }
 
-  async getSourcesByCountryID(countryID: string) {
+  async getSourcesByCountryID(countryID: number) {
     try {
       const sources = await this.countrySourcesRepo.find({
         where: { jarayid_country_id: countryID },

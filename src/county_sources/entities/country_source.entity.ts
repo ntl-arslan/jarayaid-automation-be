@@ -31,8 +31,8 @@ export class CountrySources {
 	@Column({ type: 'varchar', length: 100, nullable: true })
 	operator?: string;
 
-	@Column({ type: 'text', nullable: true })
-	joining_words?: string;
+	@Column({ type: 'int', nullable: true })
+	joining_words?: number;
 
 	@Column({ type: 'varchar', length: 500, nullable: true })
 	intro_music_path?: string;
@@ -46,8 +46,8 @@ export class CountrySources {
 	@UpdateDateColumn({ type: 'timestamp' })
 	modified_datetime: Date;
 	
-	 @Column({ type: 'varchar', length: 250, nullable: true })
-  jarayid_country_id?: string;
+	 @Column({ type: 'int',  nullable: true })
+ 	 jarayid_country_id?: number;
 	
 
 }

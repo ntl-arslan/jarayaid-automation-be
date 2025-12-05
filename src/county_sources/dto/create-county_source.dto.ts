@@ -12,7 +12,7 @@ import { Type } from 'class-transformer';
 export class CreateCountrySourceDto {
 	
 		@IsNumber()
-	jarayid_country_id: string;
+	jarayid_country_id: number;
 
 		@IsNumber()
 	jarayid_source_id: string;
@@ -30,8 +30,8 @@ export class CreateCountrySourceDto {
 	source_type?: string;
 
 	@IsOptional()
-	@IsString()
-	joining_words?: string;       
+	@IsNumber()
+	joining_words?: number;       
 
 	@IsOptional()
 	@IsString()

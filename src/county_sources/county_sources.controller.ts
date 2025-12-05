@@ -72,7 +72,7 @@ export class CountySourcesController {
 	// }
 
 	@Get('sources/:countryID')
-	async getSourcesByCountryID(@Param('countryID') countryID: string) {
+	async getSourcesByCountryID(@Param('countryID') countryID: number) {
 		return await this.countySourcesService.getSourcesByCountryID(countryID);
 	}
 

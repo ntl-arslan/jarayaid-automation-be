@@ -12,6 +12,7 @@ import { JoiningWordsModule } from './joining-words/joining-words.module';
 import { ScriptConfigurationModule } from './script-configuration/script-configuration.module';
 import { YoutubeModule } from './upload-scripts/youtube.module';
 import { OpenAIModule } from './open-ai/open-ai.module';
+import { HygenModule } from './hygen/hygen.module';
 
 @Module({
   imports: [
@@ -46,7 +47,9 @@ import { OpenAIModule } from './open-ai/open-ai.module';
     
     YoutubeModule,
     
-    OpenAIModule
+    OpenAIModule,
+
+    HygenModule,
   ],
 
   controllers: [AppController],
