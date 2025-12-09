@@ -139,7 +139,7 @@ export class OpenAIService {
           );
 
           for (const article of matchingArticles) {
-            if (count >= 10) break;
+            if (count >= 5) break;
 
             mappedArray.push({
               country_id: country.country_id,
@@ -152,7 +152,7 @@ export class OpenAIService {
             count++;
           }
 
-          if (count >= 10) break;
+          if (count >= 5) break;
         }
       }
 

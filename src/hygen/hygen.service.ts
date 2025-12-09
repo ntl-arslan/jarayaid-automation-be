@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CountriesInfo } from 'src/county_sources/entities/county_info.entity';
 import { ScriptGeneration } from 'src/script-generation/entities/script-generation.entity';
 import { Sponsor } from 'src/sponsor/entities/sponsor.entity';
@@ -18,7 +18,8 @@ export class HeygenService {
     private readonly sponsorRepo: Repository<Sponsor>,
   ) {}
 
-  private readonly API_KEY = 'sk_V2_hgu_kD8CF3X26ne_JG14EVQ4YxiFK8jlDRnCod84gsHvB13u';
+  private readonly API_KEY =
+    'sk_V2_hgu_kD8CF3X26ne_JG14EVQ4YxiFK8jlDRnCod84gsHvB13u';
   private readonly TEMPLATE_ID = 'ea5bc460f3a8491a8b8a21f626bf50e8';
   private readonly HEADERS = {
     'X-Api-Key': this.API_KEY,
@@ -28,13 +29,23 @@ export class HeygenService {
   private readonly VOICE_ID = 'YOUR_VOICE_ID';
   private readonly logger = new Logger(HeygenService.name);
 
-  async generateShortNewsVideo() {
+  async generateShortNewsVideo(country_id?: number) {
     try {
       // 1. Fetch active countries
-      const countries = await this.countriesInfoRepo
+      // const countries = await this.countriesInfoRepo
+      //   .createQueryBuilder('ci')
+      //   .where('ci.status = :status', { status: 'ACTIVE' })
+      //   .getMany();
+
+      const query = this.countriesInfoRepo
         .createQueryBuilder('ci')
-        .where('ci.status = :status', { status: 'ACTIVE' })
-        .getMany();
+        .where('ci.status = :status', { status: 'ACTIVE' });
+
+      if (country_id) {
+        query.andWhere('ci.country_id = :country_id', { country_id });
+      }
+
+      const countries = await query.getMany();
 
       if (!countries.length) {
         return { status: 'FAILURE', message: 'No active countries found' };
@@ -141,7 +152,9 @@ export class HeygenService {
 
           if (data.status === 'completed') {
             videoUrl = data.video_url;
-            this.logger.log(`Video ready for country ${countryId}: ${videoUrl}`);
+            this.logger.log(
+              `Video ready for country ${countryId}: ${videoUrl}`,
+            );
             break;
           }
 
@@ -153,6 +166,14 @@ export class HeygenService {
 
           await new Promise((r) => setTimeout(r, 5000));
         }
+
+        // const updateScriptRes = await this.scriptGenerationRepo.update(
+        //   { id: In(scripts.map(s => s.id)) },
+        //   {
+        //     status: 'DONE',
+        //     video_gen_status: 'DONE',
+        //   },
+        // );
 
         finalResults.push({
           country_id: countryId,
